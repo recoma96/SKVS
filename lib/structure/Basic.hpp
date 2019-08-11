@@ -1,3 +1,14 @@
+/***
+ *  @file : Basic.hpp
+ * 	@version : 0.0.1
+ * 	@date 2019/08/11
+ *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
+ *  @brief : 전형적인 key-value 형식의 데이터구조입니다
+ *  @license : MIT-License
+ * 
+ ***/
+
+
 #ifndef BASIC_HPP
 # define BASIC_HPP
 

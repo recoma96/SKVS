@@ -1,3 +1,13 @@
+/***
+ *  @file : DataElement.hpp
+ * 	@version : 0.0.1
+ * 	@date 2019/08/11
+ *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
+ *  @brief : SDKVS에서의 데이터 최소단위 입니다.
+ *  @license : MIT-License
+ * 
+ ***/
+
 #ifndef DATAELEMENT_HPP
 # define DATAELEMENT_HPP
 
@@ -39,7 +49,7 @@ namespace structure {
 	//1. 데이터 - 데이터타입 매칭 객체함수
 	struct CheckDataType {
 
-		bool operator() (string _data, DataType _dataType ) noexcept {
+		inline const bool operator() (string _data, DataType _dataType ) noexcept {
 
 			if( _dataType == DATATYPE_STRING) return true;
 			else if( _dataType == DATATYPE_NUMBER ) {
@@ -60,7 +70,7 @@ namespace structure {
 	//2. StructType Checker
 	struct CheckStructType {
 
-		bool operator() ( DataType _dataType, StructType _structType ) noexcept {
+		inline const bool operator() ( DataType _dataType, StructType _structType ) noexcept {
 
 			if( _structType == STRUCTTYPE_ELEMENT ) return true;
 			else if ( _structType != STRUCTTYPE_ELEMENT ) {

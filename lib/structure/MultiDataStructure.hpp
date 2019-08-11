@@ -1,3 +1,13 @@
+/***
+ *  @file : DataStructure.hpp
+ * 	@version : 0.0.1
+ * 	@date 2019/08/11
+ *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
+ *  @brief : 두개 이상의 데이터를 담는 데이터구조의 최상위 추상화 클래스 입니다.
+ *  @license : MIT-License
+ * 
+ ***/
+
 #ifndef MULTIDATASTRUCTURE_HPP
 # define MULTIDATASTRUCTURE_HPP
 

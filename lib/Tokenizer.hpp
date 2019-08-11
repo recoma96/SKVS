@@ -1,3 +1,13 @@
+/***
+ *  @file : Tokenizer.hpp
+ * 	@version : 0.0.1
+ * 	@date 2019/08/11
+ *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
+ *  @brief : 해당 문자열을 토큰화 합니다.
+ *  @license : MIT-License
+ * 
+ ***/
+
 #ifndef TOKENIZER_HPP
 # define TOKENIZER_HPP
 

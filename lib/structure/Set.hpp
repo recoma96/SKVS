@@ -1,3 +1,14 @@
+/***
+ *  @file : Set.hpp
+ * 	@version : 0.0.1
+ * 	@date 2019/08/11
+ *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
+ *  @brief : Set의 최상위 클래스
+ *  @license : MIT-License
+ * 
+ ***/
+
+
 #ifndef SET_HPP
 # define SET_HPP	
 
@@ -14,10 +25,10 @@ using namespace std;
 namespace structure {
 
 	class Set : public MultiDataStructure {
-	private:	
-		set<DataElement*> valueSet;
-		DataType dataType;
 	protected:
+		set<DataElement*> valueSet;
+		DataType valueDataType;
+
 		void updateLength(void) noexcept; //from MultiDataStructure.hpp
 	public:
 		explicit Set( const string _keyData, const DataType _valueDataType, 

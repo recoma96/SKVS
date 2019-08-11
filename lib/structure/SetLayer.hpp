@@ -1,3 +1,13 @@
+/***
+ *  @file : SetLayer.hpp
+ * 	@version : 0.0.1
+ * 	@date 2019/08/11
+ *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
+ *  @brief : Set의 추상화 클래스입니다.
+ *  @license : MIT-License
+ * 
+ ***/
+
 #ifndef SETLAYER_HPP
 # define SETLAYER_HPP
 
@@ -14,7 +24,7 @@ namespace structure {
 			Set( _keyData, _valueDataType, _structType) { }
 
 		//데이터 삽입
-		virtual bool insertValue(const string) = 0;
+		virtual bool insertValue(const string _value) = 0;
 	};
 }
 

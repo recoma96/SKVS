@@ -11,7 +11,7 @@ structure::Set::Set( const string _keyData, const DataType _valueDataType,
 		const StructType _structType ) : 
 	MultiDataStructure( _keyData, DATATYPE_STRING, _structType ) {
 
-	this->dataType = _valueDataType;
+	this->valueDataType = _valueDataType;
 	this->length = 0;
 
 }
@@ -63,7 +63,7 @@ list<DataElement*> Set::searchRange(ScanDataCondition& _condition) {
 		//MultiDataStructure.hpp
 
 		//1. string
-		if( this->dataType == DATATYPE_STRING ) {
+		if( this->valueDataType == DATATYPE_STRING ) {
 			
 			//condition첫부분이 string이 아니면 DataTypeException 반환
 			if( _condition.conditionToken[0]->dcf != DCF_STRING ) 
