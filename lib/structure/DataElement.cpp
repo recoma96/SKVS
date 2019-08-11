@@ -52,19 +52,24 @@ bool structure::DataElement::operator==( const DataElement& _targetElement ) con
 		
 }
 
-template <typename T>
-T structure::DataElement::getData(void) const noexcept {
 
-	switch( this->dataType ) {
-
-		case DATATYPE_STRING:
-			return this->data;
-		case DATATYPE_NUMBER:
-			return (number_t)(atoi(this->data.c_str()));
-		default:
-			return (float_t)(atof(this->data.c_str()));
-	}
+template <>
+string structure::DataElement::getData<string>(void) const noexcept {
+	if( this->dataType == DATATYPE_STRING) return this->data;
+	else return 0;
 }
+template <>
+number_t structure::DataElement::getData<number_t>(void) const noexcept {
+	if( this->dataType == DATATYPE_NUMBER) return (number_t)(atoi(this->data.c_str()));
+	else return 0;
+}
+template <>
+float_t structure::DataElement::getData<float_t>(void) const noexcept {
+	if( this->dataType == DATATYPE_NUMBER) return (float_t)(atoi(this->data.c_str()));
+	else return 0;
+}
+
+
 
 string structure::DataElement::getDataToString(void) const noexcept {
 	return this->data;

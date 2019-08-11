@@ -91,7 +91,7 @@ namespace structure {
 		
 		bool operator==( const DataElement& _targetElement ) const noexcept;
 
-		template <typename T>
+		template <typename T=string>
 		T getData(void) const noexcept;
 		string getDataToString(void) const noexcept;
 		DataType getDataType(void) const noexcept;
