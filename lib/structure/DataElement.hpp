@@ -85,6 +85,8 @@ namespace structure {
 		explicit DataElement( const string _data, const DataType _dataType, const StructType _structType );
 		//throw DataVaildException
 		
+		explicit DataElement( DataElement& _destElement) noexcept; //복사본
+		
 		//메모리풀 생성용
 		DataElement(void) { }
 		void setDataElement( const string _data, const DataType _dataType, const StructType _structType );
