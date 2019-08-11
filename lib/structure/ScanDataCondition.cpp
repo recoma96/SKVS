@@ -111,7 +111,7 @@ ScanDataCondition::ScanDataCondition(string _conditionStr) {
 	bool stringCheckFlag = false;
 
 	//토큰화된 데이터 없음
-	if( resultVector.empty()) return;
+	if( resultVector.empty() || _conditionStr.compare("")) return;
 
 	//토큰회된 데이터 검토
 	for( vector<string>::iterator iter = resultVector.begin();
