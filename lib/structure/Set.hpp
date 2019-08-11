@@ -32,6 +32,7 @@ namespace structure {
 		//데이터 크기
 		d_size_t getStructSize(void) noexcept;
 
+
 	};
 
 }
