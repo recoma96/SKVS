@@ -1,5 +1,5 @@
 #include <iostream>
-#include "lib/structure/MultiDataStructure.hpp"
+#include "lib/structure/SetLayer.hpp"
 
 using namespace std;
 
