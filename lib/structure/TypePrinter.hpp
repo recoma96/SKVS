@@ -64,15 +64,22 @@ namespace structure {
 	}
 	
 	template<typename T>
-	inline const T convertStringToType(const string _str ) {
+	inline const T convertStringToType(const string _str );
 
+	//template example
+	template <>
+	inline const DataType convertStringToType<DataType>(const string _str) {
 		//1.Data
 		if( _str.compare(printedString) == 0 ) return DATATYPE_STRING;
 		else if( _str.compare(printedNumber) == 0 ) return DATATYPE_NUMBER;
 		else if( _str.compare(printedFloat) == 0 ) return DATATYPE_FLOAT;
-
+		else
+			throw DataConvertException("this string is not matched with data or struct type.");
+	}
+	template <>
+	inline const StructType convertStringToType<StructType>(const string _str) {
 		//2. Structure
-		else if( _str.compare(printedElement) == 0 ) return STRUCTTYPE_ELEMENT;
+		if( _str.compare(printedElement) == 0 ) return STRUCTTYPE_ELEMENT;
 		else if( _str.compare(printedBasic) == 0 ) return STRUCTTYPE_BASIC;
 		else if( _str.compare(printedOneSet) == 0 ) return STRUCTTYPE_ONESET;
 		else if( _str.compare(printedMultiSet) == 0 ) return STRUCTTYPE_MULTISET;
@@ -82,7 +89,6 @@ namespace structure {
 		else if( _str.compare(printedStaticHashMap) == 0 ) return STRUCTTYPE_STATICHASHMAP;
 		else
 			throw DataConvertException("this string is not matched with data or struct type.");
-
 	}
 
 }
