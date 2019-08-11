@@ -78,7 +78,6 @@ namespace structure {
 	//즉, ScanDataCondition의 dcf가 다르면 Exception이 아닌
 	//false를 반환합니다.
 	//ScanDataCondition이 비어있으면 전체 범위로 간주합니다
-	//TODO 검증 필요
 	
 	//1.숫자 범위
 	struct IsInNumberRange {
