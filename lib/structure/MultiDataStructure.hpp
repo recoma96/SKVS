@@ -78,12 +78,13 @@ namespace structure {
 	//즉, ScanDataCondition의 dcf가 다르면 Exception이 아닌
 	//false를 반환합니다.
 	//ScanDataCondition이 비어있으면 전체 범위로 간주합니다
+	//TODO 검증 필요
 	
 	//1.숫자 범위
-	struct isInNumberRange {
+	struct IsInNumberRange {
 
 		//데이터컨디션 갯수는 ScanDataCondition에서 체크하므로 검사하지않음
-		bool operator()(ScanDataCondition& _condition, DataElement& _targetData) noexcept {
+		inline const bool operator()(ScanDataCondition& _condition, DataElement& _targetData) noexcept {
 
 			//데이터가 STRING값이면 false 반환
 
@@ -94,7 +95,9 @@ namespace structure {
 
 			//결과값
 			bool result = false;
+			bool nowResult = false; //result버퍼 -> 해당 문장에 대한 결과를 입력
 
+			
 			//논리연산 여부
 			bool haveLogic = false;
 			DataLogicFlag logicFlag;
@@ -129,10 +132,10 @@ namespace structure {
 					//무조건 true이므로 패스
 
 					// 1 | 0 or 1 = 1
-					if( result && logicFlag == DataLogicFlag::OR ) continue;
+					if( result && (logicFlag == DataLogicFlag::OR) ) continue;
 					
 					// 0 & 0 or 1 = 0
-					if( !result && logicFlag == DataLogicFlag::AND ) continue;
+					if( !result && (logicFlag == DataLogicFlag::AND) ) continue;
 					else {
 						
 						switch(  rangeFlag ) {
@@ -143,20 +146,43 @@ namespace structure {
 							// 1 & 1 = 1
 
 							case OVER:
-
-								if( targetValue > rangeValue ) {
-
-									
-									continue;
-								} else {
-
-									result = false;
-									continue;
-
-								}
+								 nowResult = ( targetValue > rangeValue );
 							break;
 
+							case EOVER:
+								nowResult = ( targetValue >= rangeValue);
+							break;
+							
+							case UNDER:
+								nowResult = ( targetValue < rangeValue );
+							break;
+
+							case EUNDER:
+								nowResult = ( targetValue <= rangeValue );
+							break;
+
+							case EQUAL:
+								nowResult = ( targetValue == rangeValue );
+							break;
+
+							case NONEQUAL:
+								nowResult = ( targetValue != rangeValue );	
+							break;
+									
 						}
+
+						//데이터 로직 연산
+						if( haveLogic ) {
+							if( logicFlag == DataLogicFlag::OR )
+								result |= nowResult;
+							else {
+								result &= nowResult;
+							}
+						} else {
+							result = nowResult;
+						}
+
+						continue;
 
 					}
 
@@ -169,16 +195,76 @@ namespace structure {
 
 				}
 			}
+
+			return result;
 		}
+		
 	};
 
 
 	//2.문자열 범위
-	struct isInStringRange {
-		bool operator()(const ScanDataCondition& _condition, const DataElement& _targetData) noexcept {
+	//문자열 범위는 Condition 하나만 취급 (vector원소갯수가 1개)
+	struct IsInStringRange {
+		inline const bool operator()(ScanDataCondition& _condition, const DataElement& _targetData) noexcept {
+			
+			if( _condition.isEmpty() ) return true;
+			if( _condition.conditionToken.size() != 1 ) return false;
+			if( _condition.conditionToken[0]->dcf != DCF_STRING ) return false;
+
+			// *aaa -> ... aaa
+			// aaa* -> aaa ...
+			// *aaa* -> ... aaa ...
+
+			//setString 판별에 기준이 되는 문자열
+			//targetString 판별 대상 문자열
+			string setString = ((DataStringCondition*)(_condition.conditionToken[0]))->str;
+			string targetString = _targetData.getDataToString();
+
+
+			//별 위치 여부
+			const bool starAtFirst = (*(setString.begin()) == '*');
+			const bool starAtEnd = (*(setString.end()-1) == '*');
+
+			cout << "first" << starAtFirst << endl;
+			cout << "end" << starAtEnd << endl;
+
+			if( !starAtFirst && !starAtEnd )
+				return ( targetString.compare(setString) == 0 );
+			else {
+
+				string findString;
+
+				//문자열에서 별 떼이터내기
+				if( starAtFirst && starAtEnd ) // *aa*
+					findString = setString.substr(1, setString.length() - 2);
+				else if( starAtFirst && !starAtEnd ) //*aa
+					findString = setString.substr(1);
+				else if( !starAtFirst && starAtEnd ) // aa*
+					findString = setString.substr(0, setString.length() - 1);
+
+				if( findString.length() > targetString.length() ) return false;	
+
+				int foundLoc = targetString.find(findString);
+
+				if( foundLoc == -1 ) return false; //못찾음
+				else {
+
+					if( starAtFirst && starAtEnd ) return true;
+					else if( !starAtFirst && starAtEnd ) { //찾은 위치가 반드시 맨 앞을 가려켜야 한다
+						if( foundLoc == 0 ) return true;
+						else return false;
+					} else { //찾은 위치가 맨 끝으로부터 찾는 문자열의 위치를 뺀 값
+						if( (foundLoc + (findString.length() - 1) ) == targetString.length() - 1 )
+							return true;
+						else return false;
+					}
+
+				}
+
+			}
+			
 			return false;
 		}
-
 	};
 
 
