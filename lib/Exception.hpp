@@ -38,6 +38,11 @@ public:
 
 };
 
+class DataTypeException : public DataException {
+public:
+	DataTypeException(string _errorMsg) : DataException(_errorMsg) { }
+};
+
 class DataConditionException : public DataException {
 public:
 	DataConditionException(string _errorMsg) : DataException(_errorMsg) { }
