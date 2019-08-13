@@ -1,4 +1,4 @@
-#include "lib/structure/MultiDataStructure.hpp"
+#include "lib/structure/MultiDataStructureLayer.hpp"
 
 using namespace structure;
 
