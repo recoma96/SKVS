@@ -1,5 +1,5 @@
 /***
- *  @file : DataStructureUtility.hpp
+ *  @file : Structureutility.hpp
  * 	@date 2019/08/12
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 데이터컨테이너의 인터페이스(추상클래스) 입니다.
