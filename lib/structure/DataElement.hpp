@@ -1,11 +1,8 @@
 /***
  *  @file : DataElement.hpp
- * 	@version : 0.0.1
  * 	@date 2019/08/11
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : SDKVS에서의 데이터 최소단위 입니다.
- *  @license : MIT-License
- * 
  ***/
 
 #ifndef DATAELEMENT_HPP

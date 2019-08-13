@@ -1,10 +1,8 @@
 /***
  *  @file : TypePrinter.hpp
- * 	@version : 0.0.1
  * 	@date 2019/08/11
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 숫자로 되어있는 Type을 string으로 컨버팅합니다.
- *  @license : MIT-License
  * 
  ***/
 

@@ -1,10 +1,8 @@
 /***
  *  @file : ScanDataCondition.hpp
- * 	@version : 0.0.1
  * 	@date 2019/08/11
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 탐색 범위를 작성하는 클래스 입니다.
- *  @license : MIT-License
  * 
  ***/
 

@@ -1,10 +1,8 @@
 /***
  *  @file : Exception.hpp
- * 	@version : 0.0.1
  * 	@date 2019/08/11
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 예외처리를 담당합니다
- *  @license : MIT-License
  * 
  ***/
 

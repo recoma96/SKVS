@@ -1,10 +1,8 @@
 /***
  *  @file : DataStructureLayer.hpp
- * 	@version : 0.0.1
  * 	@date 2019/08/12
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 두개 이상의 데이터를 담는 데이터구조의 최상위 클래스의 레이어 입니다.
- *  @license : MIT-License
  * 
  ***/
 
@@ -34,7 +32,7 @@ namespace structure {
 		int size;
 		string dataInfo;
 
-		PrintDataList(string _dataInfo, list<DataElement*> _resultList) {
+		PrintDataList(string _dataInfo, list<DataElement> _resultList) {
 		
 			this->dataInfo = _dataInfo;
 
@@ -46,12 +44,12 @@ namespace structure {
 			} else {
 
 				//순회
-				for(list<DataElement*>::iterator iter = _resultList.begin();
+				for(list<DataElement>::iterator iter = _resultList.begin();
 						iter != _resultList.end(); iter++ ) {
 
-					this->data.push_back((*iter)->getDataToString());
-					this->dataType.push_back((*iter)->getDataType());
-					this->structType.push_back((*iter)->getStructType());
+					this->data.push_back(iter->getDataToString());
+					this->dataType.push_back(iter->getDataType());
+					this->structType.push_back(iter->getStructType());
 					this->size++;
 
 				}
@@ -285,12 +283,6 @@ namespace structure {
 								const StructType _structType ) :
 			MultiDataStructure( _data, _dataType, _structType ) { }
 			
-		//virtual function
-		virtual list<DataElement> searchRange(ScanDataCondition& _condition) = 0;
-		virtual bool deleteRange(ScanDataCondition& _condition) = 0;
-		virtual d_size_t getStructSize(void) = 0;
-
-
 	};	
 }
 
