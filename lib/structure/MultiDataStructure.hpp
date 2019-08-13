@@ -76,8 +76,10 @@ namespace structure {
 
 		//링크 갯수 확인
 		const int getUseParentPointerNum(void) { return parentElement.use_count(); }
+		
 		//링크 연결 여부
-		const bool isLinkedByParent(void) { return (parentElement.use_count() >= 2); }
+		//이 클래스에서 shared_ptr 연결, 상위클래스에서의 shared_ptr, 데이터링크의 shared_ptr
+		const bool isLinkedByParent(void) { return (parentElement.use_count() >= 3); }
     };
 }
 
