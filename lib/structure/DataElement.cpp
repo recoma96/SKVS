@@ -5,7 +5,6 @@
 
 using namespace std;
 
-
 structure::DataElement::DataElement(const string _data, const DataType _dataType, 
 		const StructType _structType ) {
 	
@@ -22,6 +21,8 @@ structure::DataElement::DataElement(const string _data, const DataType _dataType
 	this->size = (d_size_t)(_data.length());
 
 }
+
+
 
 //복사본
 structure::DataElement::DataElement( DataElement& _destElement ) noexcept {
@@ -108,5 +109,3 @@ void structure::DataElement::setData( string _data, DataType _dataType ) {
 	}
 
 }
-
-

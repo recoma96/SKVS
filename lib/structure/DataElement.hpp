@@ -12,7 +12,7 @@
 # define DATAELEMENT_HPP
 
 #include <string>
-
+#include <memory>
 
 typedef unsigned int d_size_t; //데이터 용량(길이)
 
@@ -84,7 +84,7 @@ namespace structure {
 	};
 
 
-	class DataElement {
+	class DataElement :  public std::enable_shared_from_this<DataElement> {
 
 	private:
 		string data;
@@ -105,6 +105,7 @@ namespace structure {
 
 		template <typename T=string>
 		T getData(void) const noexcept;
+		
 		string getDataToString(void) const noexcept;
 		DataType getDataType(void) const noexcept;
 		StructType getStructType(void) const noexcept;
@@ -112,6 +113,9 @@ namespace structure {
 
 		void setData(string _data, DataType _dataType);
 		//throw DataVaildException
+
+		//shared_ptr
+		shared_ptr<DataElement> getSharedPtr() { return shared_from_this();}
 
 	};
 

@@ -1,11 +1,10 @@
-#include <iostream>
-#include "lib/structure/OneSet.hpp"
-#include <string>
-
-using namespace std;
+#include "lib/structure/MultiDataStructure.hpp"
 
 using namespace structure;
+
 int main(void) {
+
+
 
 	return 0;
 }

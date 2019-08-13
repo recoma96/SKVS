@@ -57,4 +57,10 @@ class DataConditionException : public DataException {
 public:
 	DataConditionException(string _errorMsg) : DataException(_errorMsg) { }
 };
+
+//링크문제
+class DataLinkException : public DataException {
+public:
+	DataLinkException(string _errorMsg) : DataException(_errorMsg) { }
+};
 #endif
