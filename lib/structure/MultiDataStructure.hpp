@@ -24,6 +24,10 @@ typedef unsigned int struct_len_t;
 
 namespace structure {
 
+	const unsigned int linkCount = 3; 
+	// 자기 자신의 부모 앨리먼트 스마트포인터 + 부모 컨테이너에 등록된 앨리먼트 스마트포인터 + 부모 링크리스트에 등록된 앨리먼트 스마트포인터
+	const unsigned int unlinkCount = 1; //컨테이너생서이 스마트포인터 하나 생성
+
     class MultiDataStructure : public Structure {
 	private:
 		//parent Element로부터 연결할 다음에, 
@@ -34,9 +38,8 @@ namespace structure {
 		
 		//데이터 갯수에 변화가 생길 때 이 함수를 실행  
     public:
-        explicit MultiDataStructure( const string _data, const DataType _dataType,
-								const StructType _structType ) :
-			Structure( _data, _dataType, _structType ) { 
+        explicit MultiDataStructure( const string _data, const StructType _structType ) :
+			Structure( _data, DATATYPE_STRING, _structType ) { 
 
 				this->parentElement = make_shared<DataElement>();
 				this->length = 0;
@@ -73,11 +76,11 @@ namespace structure {
 		struct_len_t getLength(void) noexcept { return this->length; }
 
 		//링크 갯수 확인
-		const int getUseParentPointerNum(void) { return parentElement.use_count(); }
+		const unsigned int getUseParentPointerNum(void) { return parentElement.use_count(); }
 		
 		//링크 연결 여부
 		//이 클래스에서 shared_ptr 연결, 상위클래스에서의 shared_ptr, 데이터링크의 shared_ptr
-		const bool isLinkedByParent(void) { return (parentElement.use_count() >= 3); }
+		const bool isLinkedByParent(void) { return (parentElement.use_count() >= linkCount); }
     };
 }
 

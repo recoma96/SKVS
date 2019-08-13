@@ -279,9 +279,10 @@ namespace structure {
 	protected:
 		virtual void updateLength(void) = 0; //데이터갯수 업데이트
 	public:
-		explicit MultiDataStructureLayer( const string _data, const DataType _dataType,
-								const StructType _structType ) :
-			MultiDataStructure( _data, _dataType, _structType ) { }
+		explicit MultiDataStructureLayer( const string _data, const StructType _structType ) :
+			MultiDataStructure( _data, _structType ) { }
+	
+		virtual const d_size_t getStructSize(void) = 0;
 			
 	};	
 }
