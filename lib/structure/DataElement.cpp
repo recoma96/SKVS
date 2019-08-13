@@ -25,11 +25,14 @@ structure::DataElement::DataElement(const string _data, const DataType _dataType
 
 
 //복사본
-structure::DataElement::DataElement( DataElement& _destElement ) noexcept {
+structure::DataElement& structure::DataElement::operator=( DataElement& _destElement) noexcept {
+
 	this->data = _destElement.getDataToString();
 	this->dataType = _destElement.getDataType();
 	this->structType = _destElement.getStructType();
-	this->size = _destElement.size;
+	this->size = static_cast<d_size_t>(this->data.length());
+	
+	return *this;
 }
 
 //메모리풀에서의 데이터생성용

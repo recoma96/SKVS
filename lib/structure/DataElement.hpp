@@ -92,13 +92,13 @@ namespace structure {
 		explicit DataElement( const string _data, const DataType _dataType, const StructType _structType );
 		//throw DataVaildException
 		
-		explicit DataElement( DataElement& _destElement) noexcept; //복사본
-		
+
 		//메모리풀 생성용
 		DataElement(void) { }
 		void setDataElement( const string _data, const DataType _dataType, const StructType _structType );
 		
 		bool operator==( const DataElement& _targetElement ) const noexcept;
+		DataElement& operator=( DataElement& _destElement) noexcept;
 
 		template <typename T=string>
 		T getData(void) const noexcept;
