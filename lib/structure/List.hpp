@@ -28,6 +28,10 @@ namespace structure {
         explicit List( const string _data, const StructType _structType ) : 
             MultiDataStructureLayer(_data, _structType) { }
             
+        ~List() {
+            valueList.clear();
+        }
+            
         const d_size_t getStructSize(void) noexcept { 
             
             d_size_t resultSize = 0;
@@ -36,6 +40,15 @@ namespace structure {
                 resultSize += (*iter)->getSize();
             
             return resultSize;
+        }
+
+        //test
+        void display(void) {
+
+            for(list<shared_ptr<DataElement>>::iterator iter = this->valueList.begin(); 
+                iter != this->valueList.end(); iter++ ) {
+                cout << (*iter)->getDataToString() << endl;
+            }
         }
     };
 }

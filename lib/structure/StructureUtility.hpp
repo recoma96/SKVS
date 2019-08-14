@@ -51,8 +51,11 @@ namespace structure {
         virtual const bool deleteRange(ScanDataCondition& _condition) = 0;
 
         //Dynamic
-        virtual const bool linkChildElement(string _targetKey, MultiDataStructure* _targetElement) = 0;
-        virtual const bool unlinkChildElement(string _targetKey) = 0;
+        virtual const bool linkChildElement(const string _targetKey, MultiDataStructure* _targetElement) = 0;
+        virtual const bool unlinkChildElement(const string _targetKey) = 0;
+
+        virtual MultiDataStructure& getChildElementByKey(const string _key) = 0;
+        virtual MultiDataStructure& getChildElementbyIndex(const unsigned int _idx) = 0;
     };
 
 }
