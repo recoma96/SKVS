@@ -1,11 +1,9 @@
-#include "lib/structure/MultiDataStructureLayer.hpp"
-#include "lib/structure/StructureUtility.hpp"
+#include "lib/structure/OneSet.hpp"
 
 using namespace structure;
+using namespace std;
 
 int main(void) {
-
-
 
 	return 0;
 }
