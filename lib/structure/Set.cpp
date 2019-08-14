@@ -48,6 +48,8 @@ const list<DataElement> Set::searchRange(ScanDataCondition& _condition) {
             resultList.push_back(**iter);
         }
 
+        return resultList;
+
     } else {
 
         //범위가 숫자형일 경우

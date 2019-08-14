@@ -10,12 +10,40 @@
 # define LISTLAYER_HPP
 
 #include "List.hpp"
+#include "../Tokenizer.hpp"
 
 #include <list>
 #include <memory>
 #include <string>
 
 namespace structure {
+
+    //인덱스 범위 판정
+    struct IsInIndex {
+        inline const bool operator() (vector<string> toked, const struct_len_t length) {
+
+            //string<vector> toked = tok::tokenizer(_indexCondition);
+
+            if( toked.size() != 2 ) return false;
+
+            CheckDataType checkDataType;
+            if(!checkDataType(toked[0], DATATYPE_NUMBER) && !checkDataType(toked[1], DATATYPE_NUMBER))
+                return false;
+
+            const int minIdx = atoi(toked[0].c_str());
+            const int maxIdx = atoi(toked[1].c_str());
+
+            //범위 계산
+            if( !(minIdx >= 0 && maxIdx < length))
+                return false;
+
+
+            if( !( minIdx <= maxIdx ) )
+                return false;
+
+            return true;
+        }
+    };
 
     class ListLayer : public List {
     public:
