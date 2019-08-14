@@ -6,6 +6,10 @@
  * 
  ***/
 
+#ifndef STRUCTUREUTILITY_HPP
+# define STRUCTUREUTILITY_HPP
+
+
 #include "ScanDataCondition.hpp"
 #include "MultiDataStructure.hpp"
 
@@ -53,3 +57,4 @@ namespace structure {
 
 }
 
+#endif
