@@ -39,6 +39,11 @@ namespace structure {
         //from StaticStructureUtility
         const list<DataElement> searchRange(ScanDataCondition& _condition);
         const bool deleteRange(ScanDataCondition& _condition);
+
+
+
+        //test
+        void display(void);
     
     };
 

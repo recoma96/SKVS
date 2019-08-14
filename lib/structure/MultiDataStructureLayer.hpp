@@ -231,9 +231,6 @@ namespace structure {
 			const bool starAtFirst = (*(setString.begin()) == '*');
 			const bool starAtEnd = (*(setString.end()-1) == '*');
 
-			cout << "first" << starAtFirst << endl;
-			cout << "end" << starAtEnd << endl;
-
 			if( !starAtFirst && !starAtEnd )
 				return ( targetString.compare(setString) == 0 );
 			else {

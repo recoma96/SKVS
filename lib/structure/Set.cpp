@@ -44,14 +44,8 @@ const list<DataElement> Set::searchRange(ScanDataCondition& _condition) {
     if(_condition.isEmpty()) {
 
         for(set<shared_ptr<DataElement>>::iterator iter = this->valueSet.begin();
-            iter != this->valueSet.end(); iter++ ) {
-            
-            /*
-            DataElement insertElement( (*iter)->getDataToString(), 
-                (*iter)->getDataType(), STRUCTTYPE_ELEMENT);
-            
-            resultList.push_back(insertElement);
-            */
+            iter != this->valueSet.end(); iter++ ) {            
+            resultList.push_back(**iter);
         }
 
     } else {
@@ -68,12 +62,7 @@ const list<DataElement> Set::searchRange(ScanDataCondition& _condition) {
                     iter != this->valueSet.end(); iter++ ) {
                     
                     if(isInNumberRange( _condition, (**iter))) {
-                        /*
-                        DataElement insertElement( (*iter)->getDataToString(), 
-                            (*iter)->getDataType(), STRUCTTYPE_ELEMENT);
-            
-                        resultList.push_back(insertElement);
-                        */
+                        resultList.push_back(**iter);
                     }
                 }
 
@@ -89,9 +78,7 @@ const list<DataElement> Set::searchRange(ScanDataCondition& _condition) {
                     iter != this->valueSet.end(); iter++ ) {
                     
                     if(isInStringrRange( _condition, (**iter))) {
-
                         resultList.push_back(**iter);
-                        
                     }
                 }
 
@@ -128,6 +115,7 @@ const bool Set::deleteRange(ScanDataCondition& _condition) {
                     }
 
                 }
+                updateLength();
                 return true;
             }
 
@@ -149,6 +137,7 @@ const bool Set::deleteRange(ScanDataCondition& _condition) {
                         iter--;
                     }
                 }
+                updateLength();
                 return true;
             }
         } else {
@@ -156,4 +145,14 @@ const bool Set::deleteRange(ScanDataCondition& _condition) {
         }
     }
     return false;
+}
+
+
+
+void Set::display(void) {
+    for(set<shared_ptr<DataElement>>::iterator iter = this->valueSet.begin();
+        iter != this->valueSet.end(); iter++ ) {
+        
+        cout << (*iter)->getDataToString() << endl;
+    }
 }
