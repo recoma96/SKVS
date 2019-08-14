@@ -21,7 +21,7 @@ Set::~Set() {
 }
 
 //from MultiDataStructureLayer
-const d_size_t Set::getStructSize(void) {
+const d_size_t Set::getStructSize(void) noexcept {
 
     d_size_t resultSize = 0;
 

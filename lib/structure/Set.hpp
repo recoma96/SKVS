@@ -34,7 +34,7 @@ namespace structure {
         ~Set();
 
         //from MultiDataStructureLayer
-        const d_size_t getStructSize(void);
+        const d_size_t getStructSize(void) noexcept;
 
         //from StaticStructureUtility
         const list<DataElement> searchRange(ScanDataCondition& _condition);
