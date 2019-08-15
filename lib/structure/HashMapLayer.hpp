@@ -17,10 +17,10 @@ namespace structure {
         HashMapLayer(const string _data, const StructType _structType ) :
             HashMap(_data, _structType ) { }
         
-        const bool insertKeyValue(const string _newKey, const string _newValue);
-        const bool updateKey( const string _targetKey, const string _newKey);
-        const bool updateValue(const string _targetKey, const string _newValue);
-        
+        virtual const bool insertKeyValue(const string _newKey, const string _newValue) = 0;
+        //virtual const bool updateKey( const string _targetKey, const string _newKey) = 0;
+        virtual const bool updateValue(const string _targetKey, const string _newValue) = 0;
+
     };
 }
 

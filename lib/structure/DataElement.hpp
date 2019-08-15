@@ -10,6 +10,7 @@
 
 #include <string>
 #include <memory>
+#include <iostream>
 
 typedef unsigned int d_size_t; //데이터 용량(길이)
 
@@ -47,19 +48,40 @@ namespace structure {
 	struct CheckDataType {
 
 		inline const bool operator() (string _data, DataType _dataType ) noexcept {
+			
+			const char* toArray = _data.c_str();
+			int strLength = _data.length(); //문자열 길이
+			bool havePointer = false; //소수점 여부
 
 			if( _dataType == DATATYPE_STRING) return true;
 			else if( _dataType == DATATYPE_NUMBER ) {
 
-				if( atoi( _data.c_str() ) == 0 && _data.compare("0") != 0 ) return false;
-				else return true;
+				for(int i = 0; i < strLength; i++) {
+					if( !(toArray[i] >= '0' && toArray[i] <= '9') ) return false;
+				}
+				return true;
 
 			} else if( _dataType == DATATYPE_FLOAT ) {
-				if( atof( _data.c_str() ) == 0 && _data.compare("0") != 0 ) return false;
-				else return true;
-			}
 
-			return false;
+				for(int i = 0; i < strLength; i++ ) {
+					
+					//소수점 판별
+					if(toArray[i] == '.' ) {
+
+						if( havePointer ) return false;
+						else {
+							
+							havePointer = true;
+							continue;
+						}
+					}
+
+
+					if( !(toArray[i] >= '0' && toArray[i] <= '9') ) { return false; }
+				}
+				return true;
+
+			}
 
 		}
 	};
