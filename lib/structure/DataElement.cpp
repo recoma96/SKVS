@@ -35,6 +35,7 @@ structure::DataElement& structure::DataElement::operator=( DataElement& _destEle
 	return *this;
 }
 
+
 //메모리풀에서의 데이터생성용
 void structure::DataElement::setDataElement(
 											const string _data,

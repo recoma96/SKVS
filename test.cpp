@@ -1,6 +1,7 @@
 #include "lib/structure/MultiSet.hpp"
 #include "lib/structure/StaticList.hpp"
 #include "lib/structure/DynamicList.hpp"
+#include "lib/structure/HashMap.hpp"
 
 #include <string>
 #include <list>
