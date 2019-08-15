@@ -55,7 +55,6 @@ namespace structure {
         virtual const bool unlinkChildElement(const string _targetKey) = 0;
 
         virtual MultiDataStructure& getChildElementByKey(const string _key) = 0;
-        virtual MultiDataStructure& getChildElementbyIndex(const unsigned int _idx) = 0;
     };
 
 }
