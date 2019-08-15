@@ -74,7 +74,7 @@ const bool DynamicList::insertValue(const string _value) {
 
 const list<DataElement> DynamicList::searchIndex(const string _indexCondition) {
 
-    vector<string> toked = tok::tokenizer(_indexCondition);
+    vector<string> toked = tok::tokenizer(_indexCondition, '-');
     IsInIndex isInIndex;
 
     if( !isInIndex( toked, this->length))

@@ -50,7 +50,7 @@ const bool StaticList::insertValue(const string _value) {
 
 const list<DataElement> StaticList::searchIndex(const string _indexCondition) {
 
-    vector<string> toked = tok::tokenizer(_indexCondition);
+    vector<string> toked = tok::tokenizer(_indexCondition, '-');
     IsInIndex isInIndex;
 
     if( !isInIndex( toked, this->length))
@@ -75,7 +75,7 @@ const list<DataElement> StaticList::searchIndex(const string _indexCondition) {
 
 const bool StaticList::deleteIndex(const string _indexCondition) {
 
-    vector<string> toked = tok::tokenizer(_indexCondition);
+    vector<string> toked = tok::tokenizer(_indexCondition, '-');
     IsInIndex isInIndex;
 
     if( !isInIndex( toked, this->length))
