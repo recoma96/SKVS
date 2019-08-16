@@ -109,6 +109,10 @@ const bool StaticHashMap::deleteRange(ScanDataCondition& _condition) {
                 DataElement compareString(iter->first, DATATYPE_STRING, STRUCTTYPE_ELEMENT);
                 if(isInStringRange(_condition, compareString)) {
                     iter = this->dataMap.erase(iter);
+                    if( this->dataMap.empty()) {
+                        updateLength();
+                        return true;
+                    }
                     iter--;
                 }
             }

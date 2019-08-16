@@ -110,7 +110,10 @@ const bool Set::deleteRange(ScanDataCondition& _condition) {
 
                     if(isInNumberRange( _condition, (**iter))) {
                         iter = this->valueSet.erase(iter);
-
+                        if(this->valueSet.empty()) {
+                            updateLength();
+                            return true;
+                        }
                         //다음 위치를 가리키므로 데이터를 건너띄는것을 
                         //방지하기 위해 1칸 앞으로 땡기기
                         iter--;
@@ -133,7 +136,10 @@ const bool Set::deleteRange(ScanDataCondition& _condition) {
 
                     if(isInStringrRange( _condition, (**iter))) {
                         iter = this->valueSet.erase(iter);
-
+                        if(this->valueSet.empty()) {
+                            updateLength();
+                            return true;
+                        }
                         //다음 위치를 가리키므로 데이터를 건너띄는것을 
                         //방지하기 위해 1칸 앞으로 땡기기
                         iter--;

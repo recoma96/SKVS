@@ -116,6 +116,10 @@ const bool DynamicHashMap::deleteRange(ScanDataCondition& _condition) {
                         link->second = nullptr;
                     }
                     iter = this->dataMap.erase(iter);
+                    if( this->dataMap.empty()) {
+                        updateLength();
+                        return true;
+                    }
                     iter--;
                 }
             }

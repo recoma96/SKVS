@@ -41,6 +41,14 @@ namespace structure {
             }
             return resultSize;
         }
+        const vector<string> getKey(void) noexcept {
+            vector<string> resultVec;
+            for(map<string, shared_ptr<DataElement>>::iterator iter = dataMap.begin();
+                iter != dataMap.end(); iter++ ) {
+                resultVec.push_back(iter->first);
+            }
+            return resultVec;
+        }
     };
 }
 
