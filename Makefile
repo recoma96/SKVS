@@ -5,7 +5,7 @@ CXXFLAGS= -std=c++17
 TEST_TARGET=test
 
 STRUC_SRC=$(wildcard lib/structure/*.cpp)
-
+PACKET_SRC=$(wildcard lib/packet/*.cpp)
 
 TEST_SRC=test.cpp
 
