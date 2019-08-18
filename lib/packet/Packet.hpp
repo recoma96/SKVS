@@ -1,6 +1,6 @@
 /***
  *  @file : Exception.hpp
- * 	@date 2019/08/11
+ * 	@date 2019/08/18
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 서버와 클라이언트, 스레드 간의 통신을 할 때 이 클래스를 사용합니다.
  * 
