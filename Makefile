@@ -10,11 +10,12 @@ SERIAL=$(shell protoc -I=lib/packet --cpp_out=lib/packet lib/packet/PacketSerial
 
 STRUC_SRC=$(wildcard lib/structure/*.cpp)
 PACKET_SRC=$(wildcard lib/packet/*.cpp)
+USER_SRC=$(wildcard lib/user/*.cpp)
 
 SERVER_SRC=$(wildcard ServerCode/*.cpp)
 CLIENT_SRC=$(wildcard ClientCode/*.cpp)
 
-SRCS=$(STRUC_SRC) $(PACKET_SRC)
+SRCS=$(STRUC_SRC) $(PACKET_SRC) $(USER_SRC)
 
 OBJS=$(SRCS:.cpp=.o)
 SERVER_OBJ=$(SERVER_SRC:.cpp=.o)
