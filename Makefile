@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++ -g
-CXXFLAGS= -std=c++17 -lprotobuf
+CXXFLAGS= -std=c++17 -lprotobuf -pthread
 
 TEST_TARGET=test
 
@@ -12,14 +12,14 @@ PACKET_SRC=$(wildcard lib/packet/*.cpp)
 
 TEST_SRC=test.cpp
 
-SRCS=$(STRUC_SRC)
+SRCS=$(STRUC_SRC) $(PACKET_SRC)
 OBJS=$(SRCS:.cpp=.o)
 
 TEST_OBJ=$(TEST_SRC:.cpp=.o)
 
 
 test: $(SERIAL) lib/packet/PacketSerial.pb.o $(OBJS) $(TEST_OBJ)
-	g++ -o $(TEST_TARGET) $(OBJS) $(TEST_OBJ)
+	g++ -o $(TEST_TARGET) $(OBJS) lib/packet/PacketSerial.pb.o $(TEST_OBJ) $(CXXFLAGS)
 
 clean_test:
 	rm lib/packet/PacketSerial.pb.*
@@ -29,4 +29,4 @@ clean_test:
 
 #make protocol object file
 lib/packet/PacketSerial.pb.o: lib/packet/PacketSerial.pb.cc
-	g++ -g -c -std=c++17 -o lib/packet/PacketSerial.pb.o lib/packet/PacketSerial.pb.cc -lprotobuf
+	g++ -g -c -std=c++17 -o lib/packet/PacketSerial.pb.o lib/packet/PacketSerial.pb.cc -lprotobuf -pthread
