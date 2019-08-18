@@ -1,8 +1,6 @@
-#include "lib/structure/MultiSet.hpp"
-#include "lib/structure/StaticList.hpp"
-#include "lib/structure/DynamicList.hpp"
-#include "lib/structure/StaticHashMap.hpp"
+
 #include "lib/packet/Packet.hpp"
+#include "lib/packet/SerialController.hpp"
 
 #include <string>
 #include <list>
@@ -14,22 +12,23 @@ using namespace std;
 
 int main(void) {
 
-	StaticHashMap A("mytest", DATATYPE_FLOAT);
-
-	A.insertKeyValue("P1", "100.13.33");
-	A.insertKeyValue("P2", "200");
-	A.insertKeyValue("P3", "300");
-	A.insertKeyValue("P4", "400");
-	//A.updateValue("P1", "10a10a10a");
-
-	ScanDataCondition all("P*");
-	list<DataElement> resultList = A.searchRange(all);
-
-	for(list<DataElement>::iterator iter = resultList.begin();
-		iter != resultList.end(); iter++ ) {
-			cout << iter->getDataToString() << endl;
-		}
+	//PakcetTest
 	
+	DataElement myData("aaa", DATATYPE_STRING, STRUCTTYPE_ELEMENT);
+
+	SendCmdPacket* testPacket = new SendCmdPacket("aaa", "bbb", 1,1,"sssss sssss");
+	RecvDataPacket* testRecvDataPacket = new RecvDataPacket("aaa", "bbb", 1, 1, myData);
+	RecvMsgPacket* testMsgPacket = new RecvMsgPacket("aaa", "bbb", 1, 1, "msg");
+	SignalPacket* testSignal = new SignalPacket("aaa", "bbb", 1, 1, SIGNALTYPE_SHUTDOWN);
+	LogPacket* testLog = new LogPacket("aaa", "bbb", 1, 1, "shit");
+
+	char* test = nullptr;
+
+	//test Packet
+	test = makePacketToCharArray<LogPacket>(*testLog);
+	delete testLog;
+	testLog = returnToPacket<LogPacket>(test);
+
 
 	return 0;
 }
