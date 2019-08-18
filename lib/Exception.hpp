@@ -61,4 +61,15 @@ class DataLinkException : public DataException {
 public:
 	DataLinkException(string _errorMsg) : DataException(_errorMsg) { }
 };
+
+
+
+//PacketException
+class PacketException : public Exception {
+public:
+	PacketException(string _errorMsg) : Exception(_errorMsg) { }
+};
 #endif
+
+
+
