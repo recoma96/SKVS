@@ -5,7 +5,7 @@ CXXFLAGS= -std=c++17 -lprotobuf
 TEST_TARGET=test
 
 #make buffer protocol file
-SERIAL=$(shell sh lib/packet/MakeProtocol.sh)
+SERIAL=$(shell protoc -I=lib/packet --cpp_out=lib/packet lib/packet/PacketSerial.proto)
 
 STRUC_SRC=$(wildcard lib/structure/*.cpp)
 PACKET_SRC=$(wildcard lib/packet/*.cpp)
@@ -18,11 +18,15 @@ OBJS=$(SRCS:.cpp=.o)
 TEST_OBJ=$(TEST_SRC:.cpp=.o)
 
 
-test: $(SERIAL) $(OBJS) lib/packet/PacketSerial.pb.o $(TEST_OBJ)
+test: $(SERIAL) lib/packet/PacketSerial.pb.o $(OBJS) $(TEST_OBJ)
 	g++ -o $(TEST_TARGET) $(OBJS) $(TEST_OBJ)
 
 clean_test:
-	$(shell sh lib/packet/DeleteProtocol.sh)
+	rm lib/packet/PacketSerial.pb.*
 	rm $(OBJS)
 	rm $(TEST_OBJ)
 	rm $(TEST_TARGET)
+
+#make protocol object file
+lib/packet/PacketSerial.pb.o: lib/packet/PacketSerial.pb.cc
+	g++ -g -c -std=c++17 -o lib/packet/PacketSerial.pb.o lib/packet/PacketSerial.pb.cc -lprotobuf
