@@ -59,5 +59,6 @@ message SignalPacketSerial {
 //LogPacket
 message LogPacketSerial {
     PacketSerial packet = 1;
-    int32 signal = 2;
+    string dateformat = 2;
+    string str = 3;
 }
