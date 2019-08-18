@@ -80,9 +80,11 @@ public:
 	UserLengthException(string _errorMsg) : UserException(_errorMsg) { }
 };
 
+class FileException : public Exception {
+public:
+	FileException(string _errorMsg) : Exception(_errorMsg) { }
 
-
-
+};
 #endif
 
 

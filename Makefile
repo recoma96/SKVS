@@ -11,11 +11,14 @@ SERIAL=$(shell protoc -I=lib/packet --cpp_out=lib/packet lib/packet/PacketSerial
 STRUC_SRC=$(wildcard lib/structure/*.cpp)
 PACKET_SRC=$(wildcard lib/packet/*.cpp)
 USER_SRC=$(wildcard lib/user/*.cpp)
+LOADER_SRC=$(wildcard lib/loader/*.cpp)
+DATABASE_SRC=$(wildcard lib/database/*.cpp)
+LIB_SRC=lib/CommandFilter.cpp
 
 SERVER_SRC=$(wildcard ServerCode/*.cpp)
 CLIENT_SRC=$(wildcard ClientCode/*.cpp)
 
-SRCS=$(STRUC_SRC) $(PACKET_SRC) $(USER_SRC)
+SRCS=$(STRUC_SRC) $(PACKET_SRC) $(USER_SRC) $(LOADER_SRC) $(DATABASE_SRC) $(LIB_SRC)
 
 OBJS=$(SRCS:.cpp=.o)
 SERVER_OBJ=$(SERVER_SRC:.cpp=.o)
@@ -34,23 +37,24 @@ client: $(SERIAL) $(CLIENT_OBJ) lib/packet/PacketSerial.pb.o $(OBJS)
 
 clean_server:
 	rm lib/packet/PacketSerial.pb.*
-	rm $(OBJS)
 	rm $(SERVER_OBJ)
 	rm $(SERVER_TARGET)
+	rm $(OBJS)
 
 clean_client:
 	rm lib/packet/PacketSerial.pb.*
+	rm $(CLIENT_TARGET)
 	rm $(OBJS)
 	rm $(CLIENT_OBJ)
-	rm $(CLIENT_TARGET)
-
+	
 clean_all:
 	rm lib/packet/PacketSerial.pb.*
+	rm $(CLIENT_TARGET)
+	rm $(SERVER_TARGET)
 	rm $(OBJS)
 	rm $(CLIENT_OBJ)
-	rm $(CLIENT_TARGET)
 	rm $(SERVER_OBJ)
-	rm $(SERVER_TARGET)
+	
 
 #make protocol object file
 lib/packet/PacketSerial.pb.o: lib/packet/PacketSerial.pb.cc

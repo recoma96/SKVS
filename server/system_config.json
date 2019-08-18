@@ -1,11 +1,7 @@
 {
     "port": 8000,
     "style": "STANDALONE",
-    "snapshot": {
-        "automatic": 1,
-        "time": 1
-    },
     "log": {
-        "location": "/log"
+        "location": "log/"
     }
 }

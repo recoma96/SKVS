@@ -53,10 +53,6 @@ public:
 	//throws DataConvertException
 	static UserLevel userLevelConverter(string _str);
 	static string userLevelDeConverter(UserLevel _level);
-
-
-
-
 };
 
 
