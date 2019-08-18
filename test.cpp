@@ -2,6 +2,7 @@
 #include "lib/structure/StaticList.hpp"
 #include "lib/structure/DynamicList.hpp"
 #include "lib/structure/StaticHashMap.hpp"
+#include "lib/packet/Packet.hpp"
 
 #include <string>
 #include <list>
