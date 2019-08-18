@@ -1,5 +1,5 @@
 /***
- *  @file : Exception.hpp
+ *  @file : Packet.hpp
  * 	@date 2019/08/18
  *  @author 하정현(seokbong60@gmail.com) Team:SweetCase Project (1-person Team)
  *  @brief : 서버와 클라이언트, 스레드 간의 통신을 할 때 이 클래스를 사용합니다.
@@ -7,7 +7,7 @@
  ***/
 
 #ifndef PACKET_HPP
-# define PAKCET_HPP
+# define PACKET_HPP
 
 #include <time.h>
 #include <string>
@@ -16,33 +16,13 @@
 
 #include "../Tokenizer.hpp"
 #include "../structure/DataElement.hpp"
+#include "../Exception.hpp"
 using namespace std;
 
 //시간 포매팅
 namespace CalTime {
 
-    string currentDataTime(void) {
-
-	    struct timeb timebuf;
-	    struct tm* now;
-	    time_t time;
-	    int millisec;
-
-	    ftime(&timebuf);
-	    time = timebuf.time;
-	    millisec = timebuf.millitm;
-
-	    now = localtime(&time);
-
-	    string resultStr("[");
-	    resultStr.append( to_string(now->tm_year+1900) ).append("/").append( to_string(now->tm_mon) ).
-		    append("/").append( to_string(now->tm_mday) ).append(" ").append( to_string(now->tm_hour)).
-		    append(":").append( to_string(now->tm_min) ).append(":").append( to_string(now->tm_sec) ).
-		    append(":").append( to_string(millisec) ).append("]");
-
-
-	    return resultStr;
-    }
+    string currentDataTime(void);
 };
 
 
@@ -66,6 +46,14 @@ enum SignalType {
     SIGNALTYPE_ERROR
 };
 
+//throw DataConvertException
+namespace PacketTypeConverter {
+    
+    template<typename T>
+    const T intToDataType(const int _type);
+    
+};
+
 class Packet {
 protected:
     PacketType packetType;
@@ -81,12 +69,12 @@ public:
         IP = _IP; cmdNum = _cmdNum; sock = _sock;
     }
     
-    const PacketType getPacketType(void) { return packetType; }
-    const string getUserName(void) { return username; }
-    const string getIP(void) { return IP; }
-    const int getCmdNum(void) { return cmdNum; }
-    const int getSock(void) { return sock; }
-    void setSock(int _sock) { sock = _sock; }
+    inline const PacketType getPacketType(void) { return packetType; }
+    inline const string getUserName(void) { return username; }
+    inline const string getIP(void) { return IP; }
+    inline const int getCmdNum(void) { return cmdNum; }
+    inline const int getSock(void) { return sock; }
+    inline void setSock(int _sock) { sock = _sock; }
 };
 
 //서버에 요청을 보낼 때 사용하는 패킷
@@ -99,7 +87,12 @@ public:
             Packet(PACKETTYPE_SENDCMD, _username, _IP, _cmdNum, _sock) {
         cmdArray = tok::tokenizer(_cmd);
     }
-    const vector<string>& getCmdArray(void) { return cmdArray; }
+    SendCmdPacket(const string _username, const string _IP,
+            const int _cmdNum, const int _sock, vector<string> _cmdVec) : 
+            Packet(PACKETTYPE_SENDCMD, _username, _IP, _cmdNum, _sock) {
+        cmdArray = _cmdVec;
+    }
+    inline const vector<string>& getCmdArray(void) { return cmdArray; }
 };
 
 //서버로부터 데이터를 받을 때 사용합니다.
@@ -112,7 +105,7 @@ public:
             Packet(PACKETTYPE_RECV, _username, _IP, _cmdNum, _sock) {
         recvPacketType = _recvPType;
     }
-    const RecvPacketType getRecvPacketType(void) { return recvPacketType; }
+    inline const RecvPacketType getRecvPacketType(void) { return recvPacketType; }
 };
 
 //데이터 수신 패킷
@@ -125,7 +118,8 @@ public:
                 RecvPacket(_username, _IP, _cmdNum, _sock, RECVPACKETTYPE_DATA) {
         data = _data;
     }
-    const structure::DataElement getData(void) {  return data; }
+    inline const structure::DataElement getCopiedData(void) {  return data; }
+    inline structure::DataElement& getData(void) { return data; }
 };
 
 class RecvMsgPacket : public RecvPacket {
@@ -137,7 +131,7 @@ public:
                 RecvPacket(_username, _IP, _cmdNum, _sock, RECVPACKETTYPE_MSG) {
         msg = _msg;
     }
-    const string getMsg(void) {  return  msg; }
+    inline const string getMsg(void) {  return  msg; }
 };
 
 
@@ -150,7 +144,7 @@ public:
                 Packet(PACKETTYPE_SIGNAL, _username, _IP, _cmdNum, _sock) {
         signal = _signal;
     }
-    const SignalType getSignal(void) { return signal; }
+    inline const SignalType getSignal(void) { return signal; }
 };
 
 
@@ -159,15 +153,26 @@ private:
     string dateFormat;
     string str;
 public:
+    //특정 장소에서 생성되었을 경우
     LogPacket(const string _username, const string _IP, const int _cmdNum,
                 const int _sock, const string _str) :
             Packet(PACKETTYPE_LOG, _username, _IP, _cmdNum, _sock) {
         str = _str;
         dateFormat = CalTime::currentDataTime();
     }
-    const string getDateFormat(void) { return dateFormat; }
-    const string getDateStr(void) { return str; }
-    const string getStatement(void) {
+
+    //다른 스레드 또는 다른 서버로부터 오는 경우
+    //dateformat의 날짜가 변경되지 말아야 함
+    LogPacket(const string _username, const string _IP, const int _cmdNum,
+                const int _sock, const string _str, const string _dateformat) :
+            Packet(PACKETTYPE_LOG, _username, _IP, _cmdNum, _sock) {
+        str = _str;
+        dateFormat = _dateformat;
+    }
+
+    inline const string getDateFormat(void) { return dateFormat; }
+    inline const string getDateStr(void) { return str; }
+    inline const string getStatement(void) {
 
         string resultStr = dateFormat;
         resultStr += " ";
