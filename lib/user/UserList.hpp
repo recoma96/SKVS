@@ -21,13 +21,15 @@ private:
 public:
 	bool insertUser(const User _newUser);
 	bool deleteUser(const string _username);
-	bool changePassword( const string _username, const string _newPassword);
-	bool changeLevel( const string _username, const UserLevel _newUserLV);
+
+	//list에 있는 User데이터를 꺼내서 출력 및 수정
+	//데이터가 존재하지 않을 경우 UserException 호출
+	User& useUser(const string _username);
 
 	//만약에 Server가 User관련 정보를 변경했을 경우 LoginedUser에게도 동기화를 해야 합니다.
 	void ayncUserList(LoginedUserList& _targetList);
 
-	User* getUserData(const string _searchName);
+	User getCopiedUserData(const string _searchName);
 
 };
 

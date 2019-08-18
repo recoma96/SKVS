@@ -7,9 +7,9 @@ using namespace std;
 User::User( const string _ID, const string _password, const UserLevel _userLV ) {
 
 	if( _ID.length() > MAX_ID_LENGTH || _ID.length() < MIN_ID_LENGTH )
-		throw new UserLengthException("ID length must be 4 ~ 16.");
+		throw UserLengthException("ID length must be 4 ~ 16.");
 	if( _password.length() > MAX_PSWD_LENGTH || _password.length() < MIN_PSWD_LENGTH )
-		throw new UserLengthException("pswd length must be 8 ~ 16.");
+		throw UserLengthException("pswd length must be 8 ~ 16.");
 
 	this->ID = _ID; this->password = _password; this->userLV = _userLV;
 
@@ -22,13 +22,13 @@ UserLevel User::getUserLevel(void) { return this->userLV; }
 void User::setID(string _newID) {
 
 	if( _newID.length() > MAX_ID_LENGTH || _newID.length() < MIN_ID_LENGTH )
-		throw new UserLengthException("ID length must be 4 ~ 16.");
+		throw UserLengthException("ID length must be 4 ~ 16.");
 	this->ID = _newID;
 }
 
 void User::setPassword( string _newPassword ) {
 	if( _newPassword.length() > MAX_PSWD_LENGTH || _newPassword.length() < MIN_PSWD_LENGTH )
-		throw new UserLengthException("pswd length must be 8 ~ 16.");
+		throw UserLengthException("pswd length must be 8 ~ 16.");
 	this->password = _newPassword;
 }
 
@@ -52,7 +52,7 @@ UserLevel User::userLevelConverter(string _str) {
 	else if( _str.compare("ROOT") == 0)
 		return USERLEVEL_ROOT;
 	else
-		throw new DataConvertException("String Data is not UserLevel");
+		throw DataConvertException("String Data is not UserLevel");
 
 }
 

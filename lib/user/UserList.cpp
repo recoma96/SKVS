@@ -31,39 +31,18 @@ bool UserList::deleteUser(const string _username) {
 
 		}
 	}
-
-	return false;
-
-}
-
-bool UserList::changePassword( const string _username, const string _newPassword ) {
-
-	for( list<User>::iterator iter = this->userList.begin();
-			iter != this->userList.end();
-			iter++ ) {
-		
-		if( _username.compare( iter->getID() ) == 0 ) {
-			iter->setPassword(_newPassword);
-			return true;
-		}
-	}
 	return false;
 }
 
-bool UserList::changeLevel(const string _username, const UserLevel _newUserLV ) {
+User& UserList::useUser(const string _username) {
 
-	for( list<User>::iterator iter = this->userList.begin(); 
-			iter != this->userList.end();
-			iter++ ) {
-		
-		if( _username.compare( iter->getID() ) == 0 ) {
-			iter->setUserLevel( _newUserLV );
-			return true;
+	for(list<User>::iterator iter = userList.begin();
+		iter != userList.end(); iter++ ) {
+		if( iter->getID().compare(_username) == 0) {
+			return *iter;
 		}
-
 	}
-	return false;
-
+	throw UserException("User Does Not Found.");
 }
 
 
@@ -92,22 +71,21 @@ void UserList::ayncUserList(LoginedUserList& _targetList) {
 	}
 }
 
-User* UserList::getUserData(const string _searchName) {
+User UserList::getCopiedUserData(const string _searchName) {
 
 	for( list<User>::iterator iter = this->userList.begin();
 			iter != this->userList.end();
 			iter++ ) {
 
 		if( iter->getID().compare(_searchName) == 0 ) {
-			User* searchedUser = nullptr;
 
-			searchedUser = new User( iter->getID(), iter->getPassword(), iter->getUserLevel() );
+			User searchedUser( iter->getID(), iter->getPassword(), iter->getUserLevel() );
 
 			return searchedUser;
 		}
 
 	}
 
-	throw new UserException("UserException UserList.cpp line 120 : User can't be found.");
+	throw UserException("UserException UserList.cpp line 120 : User can't be found.");
 
 }
