@@ -69,6 +69,20 @@ class PacketException : public Exception {
 public:
 	PacketException(string _errorMsg) : Exception(_errorMsg) { }
 };
+
+class UserException : public Exception {
+public:
+	UserException(string _errorMsg) : Exception( _errorMsg) { }
+};
+
+class UserLengthException : public UserException {
+public:
+	UserLengthException(string _errorMsg) : UserException(_errorMsg) { }
+};
+
+
+
+
 #endif
 
 
