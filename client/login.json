@@ -1,0 +1,10 @@
+{
+	"server" : {
+		"ip" : "127.0.0.1",
+		"port" : 8000
+	},
+	"user" : {
+		"id" : "hajeonghyun",
+		"paswd" : "123456789"
+	}
+}

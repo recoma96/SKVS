@@ -2,7 +2,8 @@ CC=gcc
 CXX=g++ -g
 CXXFLAGS= -std=c++17 -lprotobuf -pthread
 
-TEST_TARGET=test
+SERVER_TARGET=server/sdkvs-server
+CLIENT_TARGET=client/sdkvs-client
 
 #make buffer protocol file
 SERIAL=$(shell protoc -I=lib/packet --cpp_out=lib/packet lib/packet/PacketSerial.proto)
@@ -10,22 +11,45 @@ SERIAL=$(shell protoc -I=lib/packet --cpp_out=lib/packet lib/packet/PacketSerial
 STRUC_SRC=$(wildcard lib/structure/*.cpp)
 PACKET_SRC=$(wildcard lib/packet/*.cpp)
 
-TEST_SRC=test.cpp
+SERVER_SRC=$(wildcard ServerCode/*.cpp)
+CLIENT_SRC=$(wildcard ClientCode/*.cpp)
 
 SRCS=$(STRUC_SRC) $(PACKET_SRC)
+
 OBJS=$(SRCS:.cpp=.o)
+SERVER_OBJ=$(SERVER_SRC:.cpp=.o)
+CLIENT_OBJ=$(CLIENT_SRC:.cpp=.o)
 
 TEST_OBJ=$(TEST_SRC:.cpp=.o)
 
+all: server client
 
-test: $(SERIAL) lib/packet/PacketSerial.pb.o $(OBJS) $(TEST_OBJ)
-	g++ -o $(TEST_TARGET) $(OBJS) lib/packet/PacketSerial.pb.o $(TEST_OBJ) $(CXXFLAGS)
+server: $(SERIAL) $(SERVER_OBJ) lib/packet/PacketSerial.pb.o $(OBJS)
+	g++ -o $(SERVER_TARGET) $(SERVER_OBJ) $(OBJS) lib/packet/PacketSerial.pb.o $(CXXFLAGS)
 
-clean_test:
+client: $(SERIAL) $(CLIENT_OBJ) lib/packet/PacketSerial.pb.o $(OBJS)
+	g++ -o $(CLIENT_TARGET) $(CLIENT_OBJ) $(OBJS) lib/packet/PacketSerial.pb.o $(CXXFLAGS)
+
+
+clean_server:
 	rm lib/packet/PacketSerial.pb.*
 	rm $(OBJS)
-	rm $(TEST_OBJ)
-	rm $(TEST_TARGET)
+	rm $(SERVER_OBJ)
+	rm $(SERVER_TARGET)
+
+clean_client:
+	rm lib/packet/PacketSerial.pb.*
+	rm $(OBJS)
+	rm $(CLIENT_OBJ)
+	rm $(CLIENT_TARGET)
+
+clean_all:
+	rm lib/packet/PacketSerial.pb.*
+	rm $(OBJS)
+	rm $(CLIENT_OBJ)
+	rm $(CLIENT_TARGET)
+	rm $(SERVER_OBJ)
+	rm $(SERVER_TARGET)
 
 #make protocol object file
 lib/packet/PacketSerial.pb.o: lib/packet/PacketSerial.pb.cc

@@ -1,0 +1,19 @@
+{
+    "account": [
+        {
+            "id": "root",
+            "pswd": "123456780",
+            "userlevel": "ROOT"
+        },
+        {
+            "id": "customer01",
+            "pswd": "1234gs1578",
+            "userlevel": "CLIENT"
+        },
+        {
+            "id": "hajeonghyun",
+            "pswd": "123456789",
+            "userlevel": "ADMIN"
+        }
+    ]
+}
