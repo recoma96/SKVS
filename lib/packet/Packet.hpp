@@ -72,7 +72,7 @@ protected:
     string username;
     string IP;
     int cmdNum;
-    int sock;
+    int sock; //소켓 번호(서버측)
 public:
     Packet(const PacketType _ptype, const string _username, const string _IP,
             const int _cmdNum, const int _sock ) {
