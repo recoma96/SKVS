@@ -17,12 +17,11 @@ CommandFilter::CommandFilter(UserList* _userList) {
 	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::GetSize, TASKMILESTONE_DATABASE));
 	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::GetKey, TASKMILESTONE_DATABASE));
 	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::List, TASKMILESTONE_DATABASE));
-	
+	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::DisplayUsage, TASKMILESTONE_DATABASE));
 
 
 	//공용 명령어 삽입
 	clientCommand.insert(pair<string,TaskMileStone>(User_Setting::setPswd, TASKMILESTONE_SETUSERS));
-	clientCommand.insert(pair<string,TaskMileStone>(DB_Command::DisplayUsage, TASKMILESTONE_DATABASE));
 	clientCommand.insert(pair<string,TaskMileStone>(System_Control::quit, TASKMILESTONE_SYSTEM));
 
 	//어드민 전용 명령어 삽입
@@ -30,13 +29,6 @@ CommandFilter::CommandFilter(UserList* _userList) {
 	adminCommand.insert(pair<string,TaskMileStone>(User_Setting::userAuthSet, TASKMILESTONE_SETUSERS));
 
 	//루트 전용 명령어 삽입
-	/*
-	rootCommand.insert(pair<string,TaskMileStone>("snapshot-save", TASKMILESTONE_SNAPSHOT));
-	rootCommand.insert(pair<string,TaskMileStone>("snapshot-auto-set", TASKMILESTONE_SNAPSHOT));
-	rootCommand.insert(pair<string,TaskMileStone>("snapshot-time-set", TASKMILESTONE_SNAPSHOT));
-	rootCommand.insert(pair<string,TaskMileStone>("snapshot-load-set", TASKMILESTONE_SNAPSHOT));
-	rootCommand.insert(pair<string,TaskMileStone>("snapshot-init-log", TASKMILESTONE_LOG));
-	*/
 	rootCommand.insert(pair<string,TaskMileStone>(System_Control::shutdown, TASKMILESTONE_SYSTEM));
 
 	this->userList = _userList;
@@ -52,55 +44,18 @@ TaskMileStone CommandFilter::getMileStone(SendCmdPacket& _packet) {
 	User userData = userList->getCopiedUserData(userName);
 	userLevel = userData.getUserLevel();
 
+	map<string, TaskMileStone>::iterator iter;
+	
 	//명령어 검색
-	//데이터베이스 명령어 검색
-	for(map<string, TaskMileStone>::iterator iter = dbCommand.begin();
-			iter != dbCommand.end(); iter++ ) {
-
-		if( firstCmd.compare(iter->first) == 0 )
-			return iter->second;
-	}
-
-	//Client계열 검색
-	for( map<string, TaskMileStone>::iterator iter = clientCommand.begin();
-			iter != clientCommand.end(); iter++ ) {
-
-		if( firstCmd.compare(iter->first) == 0 )
-			return iter->second;
-
-	}
-
-	//Admin 계열 검색
-	for( map<string, TaskMileStone>::iterator iter = adminCommand.begin();
-			iter != adminCommand.end(); iter++ ) {
-
-		if( firstCmd.compare(iter->first) == 0 ) {
-
-			if( userLevel == USERLEVEL_CLIENT )
-				return TASKMILESTONE_NOAUTH;
-			else
-				return iter->second;
-		}
-			
-	}
-
-	//Root 계열 검색
-	for( map<string, TaskMileStone>::iterator iter = rootCommand.begin();
-			iter != rootCommand.end(); iter++ ) {
-		if( firstCmd.compare(iter->first) == 0 ) {
-
-			if( userLevel != USERLEVEL_ROOT)
-				return TASKMILESTONE_NOAUTH;
-			else
-				return iter->second;
-
-		}
-
-	}
-
-
-	//명령어가 잘못됨
-	return TASKMILESTONE_ERR;
+	if( (iter = dbCommand.find(firstCmd)) != dbCommand.end())
+		return iter->second;
+	else if( (iter = clientCommand.find(firstCmd)) != clientCommand.end())
+		return iter->second;
+	else if( (iter = adminCommand.find(firstCmd)) != adminCommand.end())
+		return iter->second;
+	else if( (iter = rootCommand.find(firstCmd)) != rootCommand.end())
+		return iter->second;
+	else return TASKMILESTONE_ERR;
 
 }
 
