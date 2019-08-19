@@ -22,4 +22,7 @@ public:
     LogBase(const string _fileRoot, shared_ptr<ThreadAdapter::AdapterThreadUtility>& _adapterQueue);
     const bool writeLogToFile(LogPacket* _logPacket);
 
+    //어댑터 연결 여부 확인
+    const bool checkAdapter(void);
+
 };

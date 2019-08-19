@@ -18,14 +18,13 @@ const bool LogBase::writeLogToFile(LogPacket* _logPacket) {
 
     //디렉토리 유무 확인
     DIR* dp = nullptr;
-    cout << dirRoot << endl;
     //없을 경우 false 반환
     if( (dp=opendir(dirRoot.c_str())) == nullptr) {
         return false;
     }
 
     //디렉토리 닫기
-    //closedir(dp);
+    closedir(dp);
 
     //오늘 날짜 갖고오기
     string todayLogFile = CalTime::makeLogDataFileName();
@@ -41,4 +40,10 @@ const bool LogBase::writeLogToFile(LogPacket* _logPacket) {
     
     //delete _logPacket;
     return true;
+}
+
+const bool LogBase::checkAdapter(void) {
+    shared_ptr<ThreadAdapter::AdapterThreadUtility> adapterChecker = adapterQueue.lock();
+    if( adapterChecker) return true;
+    else return false;
 }

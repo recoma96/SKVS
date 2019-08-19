@@ -1,6 +1,7 @@
 #include "../lib/packet/Packet.hpp"
 #include "../lib/logbase/LogBase.hpp"
 #include "../lib/loader/SystemLoader.hpp"
+#include "../lib/database/DataBaseCmd.hpp"
 #include <string>
 #include <list>
 #include <iostream>

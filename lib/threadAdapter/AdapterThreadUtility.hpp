@@ -57,6 +57,7 @@ namespace ThreadAdapter {
         }
 
         shared_ptr<AdapterThreadUtility> getSharedPtr() {  return shared_from_this(); }
+        weak_ptr<AdapterThreadUtility> getWeekPtr() { return weak_from_this(); }
     };
 }
 
