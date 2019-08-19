@@ -15,11 +15,12 @@ LOADER_SRC=$(wildcard lib/loader/*.cpp)
 DATABASE_SRC=$(wildcard lib/database/*.cpp)
 LIB_SRC=lib/CommandFilter.cpp
 TADAPTER_SRC=$(wildcard lib/threadAdapter/*.cpp)
+LOGBASE_SRC=$(wildcard lib/logbase/*.cpp)
 
 SERVER_SRC=$(wildcard ServerCode/*.cpp)
 CLIENT_SRC=$(wildcard ClientCode/*.cpp)
 
-SRCS=$(STRUC_SRC) $(PACKET_SRC) $(USER_SRC) $(LOADER_SRC) $(DATABASE_SRC) $(LIB_SRC) $(TADAPTER_SRC)
+SRCS=$(STRUC_SRC) $(PACKET_SRC) $(USER_SRC) $(LOADER_SRC) $(DATABASE_SRC) $(LIB_SRC) $(TADAPTER_SRC) $(LOGBASE_SRC)
 
 OBJS=$(SRCS:.cpp=.o)
 SERVER_OBJ=$(SERVER_SRC:.cpp=.o)

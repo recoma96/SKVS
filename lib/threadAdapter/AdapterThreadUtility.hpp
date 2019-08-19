@@ -15,7 +15,7 @@
 #include"../packet/Packet.hpp"
 
 namespace ThreadAdapter {
-    class AdapterThreadUtility {
+    class AdapterThreadUtility :  public std::enable_shared_from_this<AdapterThreadUtility>{
     private:
         queue<Packet*, deque<Packet*>> inputQueue;
         queue<Packet*, deque<Packet*>> outputQueue;
@@ -55,6 +55,8 @@ namespace ThreadAdapter {
         inline const bool isOutputQueueEmpty(void) noexcept {
             return outputQueue.empty();
         }
+
+        shared_ptr<AdapterThreadUtility> getSharedPtr() {  return shared_from_this(); }
     };
 }
 
