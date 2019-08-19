@@ -1,4 +1,6 @@
 #include "../lib/loader/AccountLoader.hpp"
+#include "../lib/threadAdapter/AdapterThreadUtility.hpp"
+#include "../lib/threadAdapter/AdapterThreadBridge.hpp"
 
 #include <string>
 #include <list>

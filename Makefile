@@ -38,24 +38,24 @@ client: $(SERIAL) $(CLIENT_OBJ) lib/packet/PacketSerial.pb.o $(OBJS)
 
 clean_server:
 	rm lib/packet/PacketSerial.pb.*
+	rm $(OBJS)
 	rm $(SERVER_OBJ)
 	rm $(SERVER_TARGET)
-	rm $(OBJS)
-
+	
 clean_client:
 	rm lib/packet/PacketSerial.pb.*
-	rm $(CLIENT_TARGET)
 	rm $(OBJS)
 	rm $(CLIENT_OBJ)
+	rm $(CLIENT_TARGET)
 	
 clean_all:
 	rm lib/packet/PacketSerial.pb.*
-	rm $(CLIENT_TARGET)
-	rm $(SERVER_TARGET)
 	rm $(OBJS)
 	rm $(CLIENT_OBJ)
 	rm $(SERVER_OBJ)
-	
+	rm $(CLIENT_TARGET)
+	rm $(SERVER_TARGET)
+
 
 #make protocol object file
 lib/packet/PacketSerial.pb.o: lib/packet/PacketSerial.pb.cc
