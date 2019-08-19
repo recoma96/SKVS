@@ -23,6 +23,7 @@ using namespace std;
 namespace CalTime {
 
     string currentDataTime(void);
+    string makeLogDataFileName(void); //Log파일 정할 때 사용
 };
 
 
@@ -175,6 +176,11 @@ public:
     inline const string getStatement(void) {
 
         string resultStr = dateFormat;
+
+        resultStr += " [IP : ";
+        resultStr += IP;
+        resultStr += "]";
+        
         resultStr += " ";
         resultStr += str;
 

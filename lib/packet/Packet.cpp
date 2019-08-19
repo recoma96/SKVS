@@ -1,30 +1,46 @@
 #include "Packet.hpp"
+#include <malloc.h>
 
 using namespace structure;
 
 //시간 포맷팅
 string CalTime::currentDataTime(void) {
 
-	    struct timeb timebuf;
-	    struct tm* now;
-	    time_t time;
-	    int millisec;
+	struct timeb timebuf;
+	struct tm* now = nullptr;
+	time_t time;
+	int millisec;
 
-	    ftime(&timebuf);
-	    time = timebuf.time;
-	    millisec = timebuf.millitm;
+	ftime(&timebuf);
+	time = timebuf.time;
+	millisec = timebuf.millitm;
 
-	    now = localtime(&time);
-
-	    string resultStr("[");
-	    resultStr.append( to_string(now->tm_year+1900) ).append("/").append( to_string(now->tm_mon) ).
+	now = localtime(&time);
+	string resultStr("[");
+	resultStr.append( to_string(now->tm_year+1900) ).append("/").append( to_string(now->tm_mon) ).
 		    append("/").append( to_string(now->tm_mday) ).append(" ").append( to_string(now->tm_hour)).
 		    append(":").append( to_string(now->tm_min) ).append(":").append( to_string(now->tm_sec) ).
 		    append(":").append( to_string(millisec) ).append("]");
 
+	return resultStr;
+}
 
-	    return resultStr;
-    }
+string CalTime::makeLogDataFileName(void) {
+    struct timeb timebuf;
+    struct tm* now = nullptr;
+    time_t time;
+
+    ftime(&timebuf);
+    time = timebuf.time;
+    now = localtime(&time);
+
+    string resultStr;
+    resultStr.append(to_string(now->tm_year+1900)).append("_").append(to_string(now->tm_mon)).
+            append("_").append(to_string(now->tm_mday)).append(".log");
+
+
+    return resultStr;
+}
 
 
 template<>
