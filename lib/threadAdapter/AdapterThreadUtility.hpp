@@ -22,12 +22,12 @@ namespace ThreadAdapter {
         mutex inputMutex;
         mutex outputMutex;
     public:
-        inline void pushInInputQueue(Packet* _insertPacket) {
+        inline void pushInInputQueue(Packet* _insertPacket) noexcept {
             inputMutex.lock();
             inputQueue.push(_insertPacket);
             inputMutex.unlock();
         }
-        inline Packet* popInOutputQueue(void) {
+        inline Packet* popInOutputQueue(void) noexcept {
             if( inputQueue.empty()) return nullptr;
 
             inputMutex.lock();
@@ -36,12 +36,12 @@ namespace ThreadAdapter {
             inputMutex.unlock();
             return returnPacket;
         }
-        inline void pushInOutputQueue(Packet* _outputPacket) {
+        inline void pushInOutputQueue(Packet* _outputPacket) noexcept {
             outputMutex.lock();
             outputQueue.push(_outputPacket);
             outputMutex.unlock();
         }
-        inline Packet* popInOuputQueue(void) {
+        inline Packet* popInOuputQueue(void) noexcept {
 
             outputMutex.lock();
             Packet* returnPacket = outputQueue.front();
@@ -49,10 +49,10 @@ namespace ThreadAdapter {
             outputMutex.unlock();
             return returnPacket;
         }
-        inline const bool isInputQueueEmpty(void) {
+        inline const bool isInputQueueEmpty(void) noexcept {
             return inputQueue.empty();
         }
-        inline const bool isOutputQueueEmpty(void) {
+        inline const bool isOutputQueueEmpty(void) noexcept {
             return outputQueue.empty();
         }
     };
