@@ -1,2 +1,2 @@
-# SDKVS
-Distributed In Memory Key-Value Storage
+# SKVS
+In Memory Key-Value Storage

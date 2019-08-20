@@ -17,6 +17,6 @@ SystemType SystemStyle::convertStyleToType(string _str) {
 	else if( _str.compare("DISTRIBUTED") == 0 )
 		return SYSTEMTYPE_DISTRIBUTED;
 	else
-		throw DataConvertException("DataConvertException SystemManager.cpp line 26: this string is not SystemStyle,");
+		throw DataConvertException("this string is not SystemStyle.Check system_config.json");
 }
 
