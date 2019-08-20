@@ -200,8 +200,17 @@ const PacketType whatIsPacketTypeInSerializedStr(char* _targetStr) {
 }
 
 //리시브패킷의 새부타입
-const RecvPacketType whatIsRecvPacketTypeInRecvDataSerial(RecvPacketSerial& packetSerial) {
+const RecvPacketType whatIsRecvPacketTypeInRecvDataSerial(char* _targetStr) {
     try {
+        if(!whatIsPacketTypeInSerializedStr(_targetStr) != PACKETTYPE_RECV)
+            throw DataConvertException("this pakcet is not recv packet");
+
+        const int bufSize = strlen(_targetStr);
+        protobuf::io::ArrayInputStream is(_targetStr, bufSize);
+
+        RecvPacketSerial packetSerial;
+        packetSerial.ParseFromZeroCopyStream(&is);
+
         RecvPacketType returnType = PacketTypeConverter::intToDataType<RecvPacketType>(packetSerial.recvpackettype());
         return returnType;
     } catch(DataConvertException e) {

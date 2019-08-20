@@ -34,7 +34,7 @@ const PacketType whatIsPacketTypeInSerializedStr(char* _targetStr);
 
 //Recv패킷 시리얼에 대한 세부 종류 (Msg, Data)를 알아보는 함수
 //<직전에 패킷 타입을 알아보는 함수를 사용해야 이 함수를 사용 할 수 있습니다.>
-const RecvPacketType whatIsRecvPacketTypeInRecvDataSerial(RecvPacketSerial& packetSerial);
+const RecvPacketType whatIsRecvPacketTypeInRecvDataSerial(char* _targetStr);
 
 //역직렬화
 template <class TargetSerial>
