@@ -39,7 +39,10 @@ protected:
 public:
 	//Throw userlengthexception
 	User( const string _ID, const string _password, const UserLevel _userLV );
-	
+	User() {
+		
+	} //비어있는 객체 선언
+
 	string getID(void);
 	string getPassword(void);
 	UserLevel getUserLevel(void);

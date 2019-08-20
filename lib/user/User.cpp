@@ -39,7 +39,8 @@ void User::setUserLevel( UserLevel _newUserLV ) {
 
 bool User::operator==(User arg) {
 
-	return ( (this->getID().compare(arg.getID()) == 0) );
+	return ( (this->getID().compare(arg.getID()) == 0) && 
+			(this->getPassword().compare(arg.getID()) == 0) );
 
 }
 

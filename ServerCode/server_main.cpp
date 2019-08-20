@@ -25,7 +25,7 @@ using namespace SockWrapperForCplusplus;
 bool shutdownSignal; //종료 시그널
 
 extern void IOThread(UserList* userList, LoginedUserList* loginedUserList, Socket* sock,
-              CommandFilter* cmdFilter, map<int, queue<Packet*, deque<Packet*>>>* packetBridge, mutex* bridgeMutex   );
+              CommandFilter* cmdFilter, map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge, mutex* bridgeMutex   );
 
 int main(void) {
 
@@ -76,7 +76,7 @@ int main(void) {
 	}
 
 	//소켓-패킷큐 맵 생성
-	map<int, queue<Packet*, deque<Packet*>>> packetBridge;
+	map< int, weak_ptr<queue<Packet*, deque<Packet*>>> > packetBridge;
 	mutex bridgeMutex; //패킷큐를 추가나 삭제할 때 사용
 
 	//유저리스트 생성
@@ -106,7 +106,7 @@ int main(void) {
 	
 	cout << "System Setting Complelete" << endl;
 	//클라이언트 연결 요청 대기
-	while(true) {
+	while(!shutdownSignal) {
 
 		Socket* clientSocket = new Socket(); //IO쓰레드에서 처리하므로 pointer 처리
 		listenClient(&mainSocket, 1000);
@@ -131,7 +131,7 @@ int main(void) {
 								 &packetBridge,
 								 &bridgeMutex);
 		iothread.detach();
-	
+
 	}
 
 	closeSocket(&mainSocket);

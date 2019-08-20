@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
+#include <chrono>
 
 #include "../lib/loader/ClientLoader.hpp"
 #include "../lib/SockWrapper/ClientSocketManager.hpp"
@@ -14,7 +15,9 @@
 using namespace SockWrapperForCplusplus;
 using namespace std;
 
+extern void IOThread(User* userInfo, Socket* socket);
 
+bool isShutdown = false; //shotdown flag
 int main(void) {
 
 	cout << "================== SDKVS[CLIENT] 0.1.0 Alpha ==================" << endl;
@@ -50,6 +53,7 @@ int main(void) {
 	//서버에게 로그인 정보 전송
 	//ID-pswd
 	
+	
 	string sendLoginData = clientLoader->getID() + "-" + clientLoader->getPaswd();
 	
 	if( sendData(&socket, (char*)(sendLoginData.c_str()), sendLoginData.length()) <= 0) {
@@ -68,6 +72,7 @@ int main(void) {
 
 	if(checkConnect == false) {
 		cerr << "Login Denied" << endl;
+		return 0;
 	}
 
 	//유저 레벨 부여
@@ -85,9 +90,14 @@ int main(void) {
 	delete clientLoader;
 	cout << "Complete" << endl; 
 
-	//쓰레드 생성
-	
-	
+	//IO Thread 생성
+	thread iothread = thread(IOThread, &myUser, &socket);
+	iothread.detach();
+
+	//while문
+	while(!isShutdown) {
+		this_thread::sleep_for(chrono::milliseconds(1));
+	}
 
 	closeSocket(&socket);
 	return 0;
