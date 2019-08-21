@@ -113,9 +113,8 @@ void RecvThread(Socket* socket,
             break;
             case TASKMILESTONE_SYSTEM:
             {
-                //quit : 시스템 종료
-                string quit = System_Control::quit+"\n";
-                if(recvPacket->getCmdArray()[0].compare(quit)) {
+
+                if(recvPacket->getCmdArray()[0].compare(System_Control::quit) == 0) {
                     sendPacketQueue.lock()->push(new SignalPacket(user->getID(),
                                                         socket->getIP(),
                                                         recvPacket->getCmdNum(),
@@ -124,6 +123,11 @@ void RecvThread(Socket* socket,
                     ));
 
                     //*isDisConnected = true;
+
+                } else if(recvPacket->getCmdArray()[0].compare(System_Control::shutdown) == 0) {
+                    cout << "shutdown" << endl;
+                    shutdownSignal = true;
+                    return;
                 }
             }
             break;
