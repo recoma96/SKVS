@@ -16,6 +16,7 @@ void StandaloneAdapterThreadToLog(shared_ptr<AdapterThreadBridge> _adpaterBridge
     
     weak_ptr<AdapterThreadBridge> adapterBridgeQueue = _adpaterBridgeQueue;
 
+    //어댑터 내부의 input, output 패킷 큐
     shared_ptr<AdapterThreadUtility> pipe = make_shared<AdapterThreadUtility>();
 
     bool logThreadisDead = false; //logthread 실행 여부
@@ -24,22 +25,20 @@ void StandaloneAdapterThreadToLog(shared_ptr<AdapterThreadBridge> _adpaterBridge
     thread logThread = thread(LogThread, pipe, &logThreadisDead);
 
     //AdapterSendThread 실행 <로그에 대한 추가 기능이 들어갈 경우 구현 예정>
-
+    Packet* recvPacket = nullptr;
     while(!logThreadisDead) {
-        if(!logThreadisDead) {
-            shared_ptr<AdapterThreadBridge> checkPacket = adapterBridgeQueue.lock();
 
-            //shutdownSignal확인하는것도 포함해야 하므로 nonblock
-            Packet* recvPacket = checkPacket->popInQueue(LogAdapterSerial_input, false);
+        shared_ptr<AdapterThreadBridge> checkPacket = adapterBridgeQueue.lock();
 
-            if( recvPacket != nullptr) {
-                //adapterQueue에 삽입
-                pipe->pushInInputQueue(recvPacket);
-                continue;
-            }
-            this_thread::sleep_for(chrono::milliseconds(1));
+        //shutdownSignal확인하는것도 포함해야 하므로 nonblock
+        recvPacket = checkPacket->popInQueue(LogAdapterSerial_input, false);
+
+        if( recvPacket != nullptr) {
+            //adapterQueue에 삽입
+            pipe->pushInInputQueue(recvPacket);
+            recvPacket = nullptr;
+            continue;
         }
-        
 
         this_thread::sleep_for(chrono::milliseconds(1));
     }

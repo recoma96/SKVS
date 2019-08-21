@@ -21,7 +21,7 @@ using namespace std;
 using namespace ThreadAdapter;
 using namespace structure;
 
-namespace SDKVS_DataBase {
+namespace SKVS_DataBase {
 
     class DataBase : public std::enable_shared_from_this<DataBase> {
     private:
@@ -45,9 +45,7 @@ namespace SDKVS_DataBase {
             else return false;
         }
         //명령문 실행
-        void runCmd(vector<string>& cmdVec) {
-
-        }
+        void runCmd(vector<string>& cmdVec);
         weak_ptr<DataBase> getWeekPtr() { return weak_from_this(); }
     };
 }

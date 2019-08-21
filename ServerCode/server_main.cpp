@@ -38,7 +38,6 @@ AccountLoader* accountLoader = nullptr;
 //어댑터 브릿지 패킷 일련변호
 unsigned int LogAdapterSerial_input = 0;
 unsigned int DBAdapterSerial_input = 1;
-unsigned int DBAdapterSerial_output = 2;
 
 //사용자 로그인을 중계하는 스레드
 void UserConnectThread(
@@ -53,10 +52,14 @@ void UserConnectThread(
 
 );
 
-//로그스레드를 연결할 어뎁터 스레드
+//로그스레드를 연결할 어뎁터 스레드 (Standalone)
 void StandaloneAdapterThreadToLog(shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue);
 
-
+//데이터베이스를 연결할 어댑터 스레드 (Standalone)
+void StandAloneAdapterThreadToDataBase(
+    shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue,
+    map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge
+);
 
 int main(void) {
 
@@ -128,6 +131,7 @@ int main(void) {
 		make_shared<ThreadAdapter::AdapterThreadBridge>();
 
 	thread logAdapterThread;
+	thread dataBaseAdapterThread;
 
 	//로그 위치 구하기
 	logRoot = systemLoader->getLogRoot();
@@ -141,15 +145,15 @@ int main(void) {
 		//어댑터 브랫지 패킷 큐 생성
 		//0번 : log input : 다른 스레드로부터 로그패킷 수집
 		//1번 : DB-input : 클라이언트로부터 명령패킷 수집
-		//2번 : DB-output
 
-		adapterBridgeQueue->insertQueue();
 		adapterBridgeQueue->insertQueue();
 		adapterBridgeQueue->insertQueue();
 
 		//Database, LogStorage Thread 생성
 		logAdapterThread = thread(StandaloneAdapterThreadToLog,
 									adapterBridgeQueue);
+		dataBaseAdapterThread = thread(StandAloneAdapterThreadToDataBase,
+										adapterBridgeQueue, &packetBridge);
 
 	}
 
@@ -183,7 +187,10 @@ int main(void) {
 	logPacket = new LogPacket("Server", "Server", 0, 0, "System Shutdown");
 	cout << logPacket->getStatement() << endl;
 	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
+
 	logAdapterThread.join();
+	dataBaseAdapterThread.join();
+
 	closeSocket(&mainSocket);
 	
 

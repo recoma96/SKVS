@@ -24,7 +24,6 @@ using namespace SockWrapperForCplusplus;
 
 extern unsigned int LogAdapterSerial_input;
 extern unsigned int DBAdapterSerial_input;
-extern unsigned int DBAdapterSerial_output;
 
 extern bool shutdownSignal; //종료 시그널
 

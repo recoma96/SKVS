@@ -13,7 +13,7 @@
 #include "../threadAdapter/AdapterThreadUtility.hpp"
 #include "DataBase.hpp"
 
-namespace SDKVS_DataBase {
+namespace SKVS_DataBase {
     class DataBaseCmd {
     private:
         //클라이언트로부터 전달받은 request packet

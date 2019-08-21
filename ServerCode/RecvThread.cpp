@@ -27,12 +27,9 @@ using namespace CommandList;
 
 extern unsigned int LogAdapterSerial_input;
 extern unsigned int DBAdapterSerial_input;
-extern unsigned int DBAdapterSerial_output;
 
 extern mutex writeUserInfoMutex; //유저 정보 수정할 때 사용
-
 extern bool shutdownSignal; //종료 시그널
-
 extern AccountLoader* accountLoader; //사용자 정보 변경
 
 void RecvThread(Socket* socket,
@@ -104,6 +101,9 @@ void RecvThread(Socket* socket,
             case PACKETTYPE_SENDCMD:
             {
                 recvPacket = returnToPacket<SendCmdPacket>(recvBuf);
+
+                //소켓 번호를 서버측의 소켓 번호로 변경
+                recvPacket->setSock(socket->getDiscripter());
             }
             break;  
             default:
@@ -122,6 +122,8 @@ void RecvThread(Socket* socket,
 
             
             case TASKMILESTONE_DATABASE:
+                //데이터베이스 입력 패킷 큐로 패킷을 이동
+                adapterBridgeQueue.lock()->pushInQueue(recvPacket, DBAdapterSerial_input);
             break;
             case TASKMILESTONE_SETUSERS: //유저 세팅
             {
@@ -276,6 +278,7 @@ void RecvThread(Socket* socket,
                     ));
 
                     //*isDisConnected = true;
+                    delete recvPacket;
 
                 } else if(recvPacket->getCmdArray()[0].compare(System_Control::shutdown) == 0) {
                     cout << "shutdown" << endl;
@@ -323,6 +326,7 @@ void RecvThread(Socket* socket,
                                         SIGNALTYPE_RECVEND   
                 ));
             }
+            delete recvPacket;
             break;
         }
 
