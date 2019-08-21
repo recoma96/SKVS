@@ -20,6 +20,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <chrono>
 
 using namespace std;
 using namespace SockWrapperForCplusplus;
@@ -32,17 +33,23 @@ unsigned int LogAdapterSerial_input = 0;
 unsigned int DBAdapterSerial_input = 1;
 unsigned int DBAdapterSerial_output = 2;
 
+//사용자 로그인을 중계하는 스레드
+void UserConnectThread(
+    Socket* mainSocket,
+    UserList* userList,
+    LoginedUserList* loginedUserList,
+    CommandFilter* cmdFilter,
+    map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge,
+    mutex* bridgeMutex,
+    shared_ptr<ThreadAdapter::AdapterThreadBridge> adapterBridgeQueue
+
+
+);
+
 //로그스레드를 연결할 어뎁터 스레드
 void StandaloneAdapterThreadToLog(shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue);
 
 
-extern void IOThread(UserList* userList, 
-					 LoginedUserList* loginedUserList, 
-					 Socket* sock,
-              		 CommandFilter* cmdFilter, 
-					 map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge, 
-					 mutex* bridgeMutex,
-					 shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue  );
 
 int main(void) {
 
@@ -138,44 +145,32 @@ int main(void) {
 		//Database, LogStorage Thread 생성
 		logAdapterThread = thread(StandaloneAdapterThreadToLog,
 									adapterBridgeQueue);
-		
-		logAdapterThread.detach();
+
 	}
 
 	logPacket = new LogPacket("Server", "Server", 0, 0, "System Setting Complelete");
 	cout << logPacket->getStatement() << endl;
 	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
+
+	//로그인 중계하는 스레드 생성
 	
 	//클라이언트 연결 요청 대기
+	thread userConnectThread(
+		UserConnectThread,
+		&mainSocket,
+		userList,
+		&loginedUserList,
+		&cmdFilter,
+		&packetBridge,
+		&bridgeMutex,
+		adapterBridgeQueue
+
+	);
+	userConnectThread.detach();
+	
 	while(!shutdownSignal) {
 
-		Socket* clientSocket = new Socket(); //IO쓰레드에서 처리하므로 pointer 처리
-		listenClient(&mainSocket, 1000);
-		if(!acceptClient(&mainSocket, clientSocket)) {
-
-			logPacket = new LogPacket("Server", "Server", 0, 0, "Accept Error");
-			adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
-			cerr << logPacket->getStatement() << endl;
-
-			continue;
-		}
-		
-		setSocketOption(clientSocket, SOL_SOCKET, SO_REUSEADDR, 
-			(void*)&setTrue, sizeof(int));
-		
-		//ip, port 입력
-		clientSocket->clientUpdate(mainSocket.getPort());
-
-		//IO Thread 생성
-		thread iothread = thread(IOThread,
-								 userList,
-								 &loginedUserList,
-								 clientSocket,
-								 &cmdFilter,
-								 &packetBridge,
-								 &bridgeMutex,
-								 adapterBridgeQueue);
-		iothread.detach();
+		this_thread::sleep_for(chrono::milliseconds(1));
 
 	}
 	logAdapterThread.join();
