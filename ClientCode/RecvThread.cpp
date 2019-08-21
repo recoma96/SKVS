@@ -6,6 +6,7 @@
 #include <queue>
 #include <deque>
 #include <vector>
+#include <string.h>
 
 #include "../lib/SockWrapper/ClientSocketManager.hpp"
 #include "../lib/SockWrapper/NetworkingManager.hpp"
@@ -32,6 +33,8 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
 
         int recvBufSize = 0;
         char* recvBuf = nullptr;
+        
+       
 
         //데이터받기
         if( recvData(socket, &recvBufSize, sizeof(int)) <= 0) {
@@ -39,6 +42,7 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
             isShutdown = true;
             continue;
         }
+
 
         PacketType recvType;
         if( recvData(socket, &recvType, sizeof(PacketType)) <= 0) {
@@ -55,7 +59,7 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
             continue;
         }
 
-        //데이터 역직렬화
+
         Packet* savePacket = nullptr;
         //SendCmd나 log가 들어오면 안됨
         switch( recvType ) {
@@ -63,10 +67,8 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
             case PACKETTYPE_RECV:
             {
                 RecvPacketType checkType = whatIsRecvPacketTypeInRecvDataSerial(recvBuf);
-                if( checkType == RECVPACKETTYPE_DATA) {
+                if( checkType == RECVPACKETTYPE_DATA)
                     savePacket = returnToPacket<RecvDataPacket>(recvBuf);
-                    cout << "a" << endl;
-                }
                 else
                     savePacket = returnToPacket<RecvMsgPacket>(recvBuf);
             }
@@ -93,7 +95,9 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
             break;
         }
         //패킷 큐에 삽입
+
         packetQueue->push(savePacket);
+
         delete[] recvBuf;
     }
 

@@ -65,6 +65,9 @@ extern void CmdThread(int cmdNum,
                         string cmdInterface, 
                         mutex* packetQueueMutex);
 
+//인터페이스
+string cmdInterFace;
+
 //IO Thread
 void IOThread(User* userInfo, Socket* socket) {
     
@@ -75,7 +78,7 @@ void IOThread(User* userInfo, Socket* socket) {
     vector<int> cmdSerialList; //cmd시리얼 리스트
     mutex cmdSerialMutex; //cmd시리얼 번호를 생성/삭제에 있어서 사용하는 mutex
 
-    string cmdInterFace; cmdInterFace.clear();
+    cmdInterFace.clear();
     cmdInterFace += userInfo->getID();
 
     if( userInfo->getUserLevel() == USERLEVEL_ROOT)

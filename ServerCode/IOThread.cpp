@@ -35,8 +35,14 @@ extern void RecvThread(Socket* socket,
                 weak_ptr<ThreadAdapter::AdapterThreadBridge> _adapterBridgeQueue,
                 bool* isDisConnected);
 
+//Send Thread
+extern void SendThread(Socket* socket,
+                LoginedUser* user,
+                shared_ptr<queue<Packet*, deque<Packet*>>> _sendPacketQueue,
+                weak_ptr<ThreadAdapter::AdapterThreadBridge> _adapterBridgeQueue,
+                bool* isDisConnected );
 
-extern void IOThread(   UserList* userList, 
+void IOThread(   UserList* userList, 
                         LoginedUserList* loginedUserList, 
                         Socket* sock,
                         CommandFilter* cmdFilter, 
@@ -177,6 +183,18 @@ extern void IOThread(   UserList* userList,
                       &isDisConnected
     );
     recvThread.detach();
+
+    //SendTrhead
+    thread sendThread(SendThread,
+                      sock,
+                      &loginedUser,
+                      userPacketBridge,
+                      adapterBridgeQueue,
+                      &isDisConnected
+
+    );
+    sendThread.detach();
+    
     
     //while진입
     while(!shutdownSignal && !isDisConnected ) {

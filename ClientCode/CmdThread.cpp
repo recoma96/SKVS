@@ -23,11 +23,14 @@ void CmdThread(int cmdNum,
     while(!isShutdown) {
         if(!packetQueue->empty()) {
             //cmd번호 확인
+            
             if(packetQueue->front()->getCmdNum() == cmdNum) {
 
                 //패킷 큐에서 패킷 받기
                 packetQueueMutex->lock();
+
                 Packet* recvPacket = packetQueue->front();
+
                 packetQueue->pop();
                 packetQueueMutex->unlock();
 
@@ -69,6 +72,7 @@ void CmdThread(int cmdNum,
                             break;
                             case SIGNALTYPE_RECVSTART: //수신 시작
                                 delete signalPacket;
+                                cout << endl;
                             break;
                             case SIGNALTYPE_RECVEND: //수신 종료
                                 delete signalPacket;

@@ -33,7 +33,10 @@ void RecvThread(Socket* socket,
                 weak_ptr<ThreadAdapter::AdapterThreadBridge> _adapterBridgeQueue,
                 bool* isDisConnected) {
     
+    //다른 스레드로 패킷을 이동할 때 사용함
     weak_ptr<ThreadAdapter::AdapterThreadBridge> adapterBridgeQueue = _adapterBridgeQueue;
+
+    //SendThread로 패킷을 보냄
     weak_ptr<queue<Packet*, deque<Packet*>>> sendPacketQueue = _sendPacketQueue;
 
     while(!shutdownSignal && !(*isDisConnected)) {
@@ -114,107 +117,29 @@ void RecvThread(Socket* socket,
                 else
                     errorMsg = "Authority denied";
 
-                //패킷 작성
-                RecvMsgPacket sendPacket(user->getID(), 
+                //수신을 시작하는 패킷 삽입
+                sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
+                                        socket->getIP(),
+                                        recvPacket->getCmdNum(),
+                                        socket->getDiscripter(),
+                                        SIGNALTYPE_RECVSTART   
+                ));
+
+                //에러메세지를 보내는 패킷 삽입
+                sendPacketQueue.lock()->push( new RecvMsgPacket(user->getID(), 
                                          socket->getIP(),
                                          recvPacket->getCmdNum(),
                                          socket->getDiscripter(),
                                          errorMsg
-                );
+                ));
 
-                //시그널 패킷 작성
-                SignalPacket sigPacket(user->getID(),
-                                       socket->getIP(),
-                                       recvPacket->getCmdNum(),
-                                       socket->getDiscripter(),
-                                       SIGNALTYPE_RECVEND
-                );
-
-                int sendBufSize = 0; //직렬화된 데이터 사이즈
-                char* sendBuf = nullptr; //직렬화할때 사용
-
-                sendBuf = makePacketToCharArray<RecvMsgPacket>(sendPacket);
-                sendBufSize = strlen(sendBuf);
-               
-                //메시지 패킷 송신
-                if(sendData(socket, &sendBufSize, sizeof(int)) <= 0) {
-                    
-                    delete sendBuf;
-                    *isDisConnected = true;
-
-                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-                    cerr << logPacket->getStatement() << endl;
-                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
-                    continue;
-                }
-
-                //데이터타입 송신
-                PacketType sendType = sendPacket.getPacketType();
-                if(sendData(socket, &sendType, sizeof(PacketType)) <= 0) {
-                    
-                    delete sendBuf;
-                    *isDisConnected = true;
-
-                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-                    cerr << logPacket->getStatement() << endl;
-                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
-                    continue;
-                }
-
-                //데이터 송신
-                if(sendData(socket, sendBuf, sendBufSize) <= 0) {
-                    
-                    delete sendBuf;
-                    *isDisConnected = true;
-
-                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-                    cerr << logPacket->getStatement() << endl;
-                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
-                    continue;
-                }
-
-                delete sendBuf;
-
-                //시그널 패킷 송신
-                sendBuf = makePacketToCharArray<SignalPacket>(sigPacket);
-                sendBufSize = strlen(sendBuf);
-
-                //메시지 패킷 송신
-                if(sendData(socket, &sendBufSize, sizeof(int)) <= 0) {
-                    
-                    delete sendBuf;
-                    *isDisConnected = true;
-
-                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-                    cerr << logPacket->getStatement() << endl;
-                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
-                    continue;
-                }
-
-                //데이터타입 송신
-                sendType = sigPacket.getPacketType();
-                if(sendData(socket, &sendType, sizeof(PacketType)) <= 0) {
-                    
-                    delete sendBuf;
-                    *isDisConnected = true;
-
-                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-                    cerr << logPacket->getStatement() << endl;
-                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
-                    continue;
-                }
-
-                if(sendData(socket, sendBuf, sendBufSize) <= 0) {
-                    
-                    delete sendBuf;
-                    *isDisConnected = true;
-
-                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-                    cerr << logPacket->getStatement() << endl;
-                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
-                    continue;
-                }
-                delete sendBuf;
+                //시그널 패킷 삽입
+                sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
+                                        socket->getIP(),
+                                        recvPacket->getCmdNum(),
+                                        socket->getDiscripter(),
+                                        SIGNALTYPE_RECVEND   
+                ));
             }
             break;
         }
