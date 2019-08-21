@@ -100,6 +100,5 @@ namespace ThreadAdapter {
 
             return returnPacket;
         }
-
     };
 }

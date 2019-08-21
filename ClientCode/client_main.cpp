@@ -17,6 +17,7 @@ using namespace std;
 
 extern void IOThread(User* userInfo, Socket* socket);
 
+
 bool isShutdown = false; //shotdown flag
 int main(void) {
 

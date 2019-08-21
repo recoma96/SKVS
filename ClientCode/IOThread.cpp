@@ -123,14 +123,21 @@ void IOThread(User* userInfo, Socket* socket) {
         char* sendStr = makePacketToCharArray<SendCmdPacket>(sendPacket);
         int sendStrSize = strlen(sendStr);
         
-        //패킷 전송
-
-        if( sendData(socket, &sendStrSize, sizeof(int)) >= 0) {
+        //패킷 전송 (데이터 길이, 데이터 타입, 데이터)
+        if( sendData(socket, &sendStrSize, sizeof(int)) <= 0) {
             cerr << "Server Disconnected" << endl;
             isShutdown = true;
             continue;
         }
-        if( sendData(socket, sendStr, sendStrSize) >= 0) {
+
+        PacketType sendType = sendPacket.getPacketType();
+        if( sendData(socket, &sendType, sizeof(PacketType)) <= 0) {
+            cerr << "Server Disconnected" << endl;
+            isShutdown = true;
+            continue;
+        }
+
+        if( sendData(socket, sendStr, sendStrSize) <= 0) {
             cerr << "Server Disconnected" << endl;
             isShutdown = true;
             continue;

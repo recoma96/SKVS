@@ -98,8 +98,7 @@ const SignalType  PacketTypeConverter::intToDataType<SignalType>(const int _type
         case 0: return SIGNALTYPE_SHUTDOWN;
         case 1: return SIGNALTYPE_RECVSTART;
         case 2: return SIGNALTYPE_RECVEND;
-        case 3: return SIGNALTYPE_SETEND;
-        case 4: return SIGNALTYPE_ERROR;
+        case 3: return SIGNALTYPE_ERROR;
         default:
             throw DataConvertException("This integer is over about Signal Type");
     }

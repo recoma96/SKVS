@@ -27,6 +27,15 @@ extern unsigned int DBAdapterSerial_output;
 
 extern bool shutdownSignal; //종료 시그널
 
+//Recv Thread
+extern void RecvThread(Socket* socket,
+                LoginedUser* user,
+                CommandFilter* cmdFilter,
+                shared_ptr<queue<Packet*, deque<Packet*>>> _sendPacketQueue,
+                weak_ptr<ThreadAdapter::AdapterThreadBridge> _adapterBridgeQueue,
+                bool* isDisConnected);
+
+
 extern void IOThread(   UserList* userList, 
                         LoginedUserList* loginedUserList, 
                         Socket* sock,
@@ -151,16 +160,38 @@ extern void IOThread(   UserList* userList,
     string alertMsg("This User is Logined. User : ");
     alertMsg += user.getID();
         
-    logPacket = new LogPacket("Server", "Server", 0, 0, alertMsg);
+    logPacket = new LogPacket(user.getID(), sock->getIP(), 0, 0, alertMsg);
     cout << logPacket->getStatement() << endl;
     adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
 
+    //클라이언트와의 연결이 끊어졌는 지에 대한 여부
+    bool isDisConnected = false;
 
     //Send/Recv Thread 생성
-
-    //while진입
+    thread recvThread(RecvThread,
+                      sock,
+                      &loginedUser,
+                      cmdFilter,
+                      userPacketBridge,
+                      adapterBridgeQueue,
+                      &isDisConnected
+    );
+    recvThread.detach();
     
-    while(!shutdownSignal) {
+    //while진입
+    while(!shutdownSignal && !isDisConnected ) {
         this_thread::sleep_for(chrono::milliseconds(1));
+    }
+
+    if(isDisConnected) {
+        //패킷 브릿지 삭제
+        packetBridge->erase(sock->getDiscripter());
+        //로그인 유저 리스트에서 삭제
+        if(!loginedUserList->deleteLoginedUser(loginedUser))
+            cout << "delete Error" << endl;
+
+        logPacket = new LogPacket(user.getID(), sock->getIP(), 0, 0, "This User is loged out");
+        cout << logPacket->getStatement() << endl;
+        adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
     }
 }
