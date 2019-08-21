@@ -79,7 +79,6 @@ void CmdThread(int cmdNum,
                                 delete signalPacket;
                                 //데이터 출력
                                 printMutex.lock();
-                                cout << printVector.size() << endl;
                                 for( int i = 0; i < printVector.size(); i++ ) {
                                     cout << printVector[i] << endl;
                                 }
