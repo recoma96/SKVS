@@ -15,6 +15,8 @@ public:
 	bool insertLoginedUser(LoginedUser _loginedUser);
 	bool deleteLoginedUser(LoginedUser _deleteUser);
 
+	bool searchLoginedUser(const string _username) noexcept;
+
 	//동기화용
 	list<LoginedUser>& getList(void);
 

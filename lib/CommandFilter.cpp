@@ -21,12 +21,11 @@ CommandFilter::CommandFilter(UserList* _userList) {
 
 
 	//공용 명령어 삽입
-	clientCommand.insert(pair<string,TaskMileStone>(User_Setting::setPswd, TASKMILESTONE_SETUSERS));
 	clientCommand.insert(pair<string,TaskMileStone>(System_Control::quit, TASKMILESTONE_SYSTEM));
 
 	//어드민 전용 명령어 삽입
 	adminCommand.insert(pair<string,TaskMileStone>(User_Setting::userAdd, TASKMILESTONE_SETUSERS));
-	adminCommand.insert(pair<string,TaskMileStone>(User_Setting::userAuthSet, TASKMILESTONE_SETUSERS));
+	adminCommand.insert(pair<string,TaskMileStone>(User_Setting::userDel, TASKMILESTONE_SETUSERS));
 
 	//루트 전용 명령어 삽입
 	rootCommand.insert(pair<string,TaskMileStone>(System_Control::shutdown, TASKMILESTONE_SYSTEM));

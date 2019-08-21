@@ -33,9 +33,8 @@ namespace CommandList {
 
     namespace User_Setting {
 
-        const string setPswd = "set-pswd";
-        const string userAdd = "useradd";
-        const string userAuthSet = "userauthset";        
+        const string userAdd = "useradd"; //ex useradd newUser, newPswd
+        const string userDel = "userdel";     
 
     }
 

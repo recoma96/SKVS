@@ -46,11 +46,11 @@ bool User::operator==(User arg) {
 
 UserLevel User::userLevelConverter(string _str) {
 
-	if( _str.compare("CLIENT") == 0)
+	if( _str.compare("client") == 0)
 		return USERLEVEL_CLIENT;
-	else if( _str.compare("ADMIN") == 0)
+	else if( _str.compare("admin") == 0)
 		return USERLEVEL_ADMIN;
-	else if( _str.compare("ROOT") == 0)
+	else if( _str.compare("root") == 0)
 		return USERLEVEL_ROOT;
 	else
 		throw DataConvertException("String Data is not UserLevel");
@@ -60,11 +60,11 @@ UserLevel User::userLevelConverter(string _str) {
 string User:: userLevelDeConverter(UserLevel _level) {
 
 	if( _level == USERLEVEL_CLIENT)
-		return "CLIENT";
+		return "client";
 	else if( _level == USERLEVEL_ADMIN)
-		return "ADMIN";
+		return "admin";
 	else
-		return "ROOT";
+		return "root";
 
 
 }

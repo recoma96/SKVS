@@ -75,8 +75,10 @@ void CmdThread(int cmdNum,
                             break;
                             case SIGNALTYPE_RECVEND: //수신 종료
                                 delete signalPacket;
+                                
                                 //데이터 출력
                                 printMutex.lock();
+                                cout << endl;
                                 for( int i = 0; i < printVector.size(); i++ ) {
                                     cout << printVector[i] << endl;
                                 }

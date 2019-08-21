@@ -104,8 +104,6 @@ bool AccountLoader::setUserPswd( const string _userName, const string _newPaswd 
 			//수정한 부분을 다새 생성
 			User changeUser( changeID, changePswd, changeLevel );
 
-			cout << "result : " << changeUser.getPassword() << endl;
-
 			//기존에 있는 데이터 삭제하고 변경된 데이터로 갱신
 			uList.Erase(iter);
 			addUser(changeUser);

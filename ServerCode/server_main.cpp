@@ -28,6 +28,13 @@ using namespace SockWrapperForCplusplus;
 bool shutdownSignal; //종료 시그널
 string logRoot; //로그 저장 위치
 
+//사용자 정보 작성
+mutex writeUserInfoMutex;
+
+//System, AccountLoader
+SystemLoader* systemLoader = nullptr;
+AccountLoader* accountLoader = nullptr;
+
 //어댑터 브릿지 패킷 일련변호
 unsigned int LogAdapterSerial_input = 0;
 unsigned int DBAdapterSerial_input = 1;
@@ -56,8 +63,6 @@ int main(void) {
 	cout << "================== SKVS[SERVER] 0.1.0 Alpha ==================" << endl;
 	cout << endl;
 	shutdownSignal = false;
-	SystemLoader* systemLoader = nullptr;
-	AccountLoader* accountLoader = nullptr;
 	LogPacket* logPacket = nullptr; //로그패킷 제작 틀
 
 	//json파일로부터 데이터 파싱

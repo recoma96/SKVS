@@ -7,6 +7,7 @@
 #include "../lib/Tokenizer.hpp"
 #include "../lib/threadAdapter/AdapterThreadBridge.hpp"
 
+
 #include "../lib/Tokenizer.hpp"
 
 #include <string>
@@ -29,6 +30,8 @@ extern bool shutdownSignal; //종료 시그널
 
 //Recv Thread
 extern void RecvThread(Socket* socket,
+                UserList* userList,
+                LoginedUserList* loginedUserList,
                 LoginedUser* user,
                 CommandFilter* cmdFilter,
                 shared_ptr<queue<Packet*, deque<Packet*>>> _sendPacketQueue,
@@ -176,6 +179,8 @@ void IOThread(   UserList* userList,
     //Send/Recv Thread 생성
     thread recvThread(RecvThread,
                       sock,
+                      userList,
+                      loginedUserList,
                       &loginedUser,
                       cmdFilter,
                       userPacketBridge,

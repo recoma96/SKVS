@@ -53,3 +53,13 @@ void LoginedUserList::display(void) {
 	}
 
 }
+
+bool LoginedUserList::searchLoginedUser(const string _username) noexcept {
+	for(list<LoginedUser>::iterator iter = this->userList.begin();
+		iter != userList.end(); iter++ ) {
+		
+		if(iter->getID().compare(_username) == 0)
+			return true;
+	}
+	return false;
+}

@@ -3,17 +3,12 @@
         {
             "id": "root",
             "pswd": "123456780",
-            "userlevel": "ROOT"
+            "userlevel": "root"
         },
         {
-            "id": "hajeonghyun",
-            "pswd": "123456789",
-            "userlevel": "ROOT"
-        },
-        {
-            "id": "customer01",
-            "pswd": "newPasword",
-            "userlevel": "CLIENT"
+            "id": "jeonghyun",
+            "pswd": "12345678",
+            "userlevel": "root"
         }
     ]
 }
