@@ -18,10 +18,10 @@ using namespace std;
 enum TaskMileStone { //패킷이 어디로 가야 할 지를 정해주는 인식표입니다
 
 	TASKMILESTONE_DATABASE,  //데이터베이스로 이동합니다.
-	TASKMILESTONE_SNAPSHOT, //데이터 베이스의 snapshot으로 이동합니다.:
+	//TASKMILESTONE_SNAPSHOT, //데이터 베이스의 snapshot으로 이동합니다.:
 	TASKMILESTONE_SETUSERS, //유저를 새팅하는 Control Center로 이동합니다	:
-	TASKMILESTONE_LOG, //로그쓰레드로 이동합니다.
-	TASKMILESTONE_BROADCAST, //메세지를 다른 유저에게 뿌려줍니다
+	//TASKMILESTONE_LOG, //로그쓰레드로 이동합니다.
+	//TASKMILESTONE_BROADCAST, //메세지를 다른 유저에게 뿌려줍니다
 	TASKMILESTONE_SYSTEM, //시스템명령입니다
 	TASKMILESTONE_ERR, //검색이 안되었을 경우입니다
 	TASKMILESTONE_NOAUTH //권한문제

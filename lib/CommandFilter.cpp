@@ -52,9 +52,18 @@ TaskMileStone CommandFilter::getMileStone(SendCmdPacket& _packet) {
 	else if( (iter = clientCommand.find(firstCmd)) != clientCommand.end())
 		return iter->second;
 	else if( (iter = adminCommand.find(firstCmd)) != adminCommand.end())
-		return iter->second;
-	else if( (iter = rootCommand.find(firstCmd)) != rootCommand.end())
-		return iter->second;
+	{	
+		if( userLevel == USERLEVEL_CLIENT)
+			return TASKMILESTONE_NOAUTH;
+		else
+			return iter->second;
+	}
+	else if( (iter = rootCommand.find(firstCmd)) != rootCommand.end()) {
+		if( userLevel != USERLEVEL_ROOT)
+			return TASKMILESTONE_NOAUTH;
+		else
+			return iter->second;
+	}
 	else return TASKMILESTONE_ERR;
 
 }
