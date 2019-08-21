@@ -88,10 +88,8 @@ void IOThread(User* userInfo, Socket* socket) {
 
     if( userInfo->getUserLevel() == USERLEVEL_ROOT)
         cmdInterFace += " #> ";
-    else if(userInfo->getUserLevel() == USERLEVEL_ADMIN)
-        cmdInterFace += " %> ";
     else
-        cmdInterFace += " > ";
+        cmdInterFace += " $> ";
 
     //RecvThread 생성
     thread recvThread = thread(RecvThread, socket, &packetQueue );

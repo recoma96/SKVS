@@ -48,8 +48,6 @@ UserLevel User::userLevelConverter(string _str) {
 
 	if( _str.compare("client") == 0)
 		return USERLEVEL_CLIENT;
-	else if( _str.compare("admin") == 0)
-		return USERLEVEL_ADMIN;
 	else if( _str.compare("root") == 0)
 		return USERLEVEL_ROOT;
 	else
@@ -61,8 +59,6 @@ string User:: userLevelDeConverter(UserLevel _level) {
 
 	if( _level == USERLEVEL_CLIENT)
 		return "client";
-	else if( _level == USERLEVEL_ADMIN)
-		return "admin";
 	else
 		return "root";
 

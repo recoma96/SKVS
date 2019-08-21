@@ -23,12 +23,10 @@ CommandFilter::CommandFilter(UserList* _userList) {
 	//공용 명령어 삽입
 	clientCommand.insert(pair<string,TaskMileStone>(System_Control::quit, TASKMILESTONE_SYSTEM));
 
-	//어드민 전용 명령어 삽입
-	adminCommand.insert(pair<string,TaskMileStone>(User_Setting::userAdd, TASKMILESTONE_SETUSERS));
-	adminCommand.insert(pair<string,TaskMileStone>(User_Setting::userDel, TASKMILESTONE_SETUSERS));
-
 	//루트 전용 명령어 삽입
 	rootCommand.insert(pair<string,TaskMileStone>(System_Control::shutdown, TASKMILESTONE_SYSTEM));
+	rootCommand.insert(pair<string,TaskMileStone>(User_Setting::userAdd, TASKMILESTONE_SETUSERS));
+	rootCommand.insert(pair<string,TaskMileStone>(User_Setting::userDel, TASKMILESTONE_SETUSERS));
 
 	this->userList = _userList;
 	
@@ -50,13 +48,6 @@ TaskMileStone CommandFilter::getMileStone(SendCmdPacket& _packet) {
 		return iter->second;
 	else if( (iter = clientCommand.find(firstCmd)) != clientCommand.end())
 		return iter->second;
-	else if( (iter = adminCommand.find(firstCmd)) != adminCommand.end())
-	{	
-		if( userLevel == USERLEVEL_CLIENT)
-			return TASKMILESTONE_NOAUTH;
-		else
-			return iter->second;
-	}
 	else if( (iter = rootCommand.find(firstCmd)) != rootCommand.end()) {
 		if( userLevel != USERLEVEL_ROOT)
 			return TASKMILESTONE_NOAUTH;

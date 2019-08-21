@@ -8,7 +8,7 @@
         {
             "id": "jeonghyun",
             "pswd": "12345678",
-            "userlevel": "root"
+            "userlevel": "client"
         }
     ]
 }

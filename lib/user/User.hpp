@@ -15,7 +15,6 @@ using namespace std;
 enum UserLevel {
 
 	USERLEVEL_CLIENT = 1,
-	USERLEVEL_ADMIN,
 	USERLEVEL_ROOT
 
 };

@@ -167,37 +167,31 @@ void RecvThread(Socket* socket,
                         //msg length가 0인 시점에서 다음 명령 수행
                         if( msg.length() == 0) {
 
-                            //어드민 유저는 루트유저 생성 불가능
-                            if( user->getUserLevel() != USERLEVEL_ROOT && 
-                                newUserLevel == USERLEVEL_ROOT) {
-                                msg = "Admin can't add root user";
-                                logMsg = "admin user try to add root user";
-                            } else {
-                                //유저 클래스 작성
-                                User newUser(recvPacket->getCmdArray()[1],
-                                        recvPacket->getCmdArray()[2],
-                                        newUserLevel
-                                );
+                            //유저 클래스 작성
+                            User newUser(recvPacket->getCmdArray()[1],
+                                    recvPacket->getCmdArray()[2],
+                                    newUserLevel
+                            );
 
-                                //userList에 추가
-                                writeUserInfoMutex.lock();
-                                userList->insertUser(newUser);
+                            //userList에 추가
+                            writeUserInfoMutex.lock();
+                            userList->insertUser(newUser);
                     
 
-                                //json에도 추가
-                                bool resultToAddUser = accountLoader->addUser(newUser);
+                            //json에도 추가
+                            bool resultToAddUser = accountLoader->addUser(newUser);
 
-                                if(resultToAddUser) {
-                                    logMsg = "add user -> ID " + newUser.getID();
-                                    msg = "complete to add user.";
-                                    accountLoader->updateFile();
-                                    writeUserInfoMutex.unlock();
-                                } else {
-                                    writeUserInfoMutex.unlock();
-                                    logMsg = "useradd failed";
-                                    msg = "This user is aleady exist";
-                                }
+                            if(resultToAddUser) {
+                                logMsg = "add user -> ID " + newUser.getID();
+                                msg = "complete to add user.";
+                                accountLoader->updateFile();
+                                writeUserInfoMutex.unlock();
+                            } else {
+                                writeUserInfoMutex.unlock();
+                                logMsg = "useradd failed";
+                                msg = "This user is aleady exist";
                             }
+
                         }
                     }        
 
@@ -294,11 +288,17 @@ void RecvThread(Socket* socket,
             {
                 //delete recvPacket;
                 string errorMsg;
+                string logMsg;
 
-                if(milestone == TASKMILESTONE_ERR)
+                if(milestone == TASKMILESTONE_ERR) {
                     errorMsg = "Command Not Found";
-                else
+                }
+                else {
                     errorMsg = "Authority denied";
+                    logMsg = "This IP try to root command [ID " + user->getID() + "]";
+                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, logMsg);
+                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+                }
 
                 //수신을 시작하는 패킷 삽입
                 sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
