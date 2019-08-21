@@ -27,7 +27,7 @@ namespace ThreadAdapter {
             inputQueue.push(_insertPacket);
             inputMutex.unlock();
         }
-        inline Packet* popInOutputQueue(void) noexcept {
+        inline Packet* popInInputQueue(void) noexcept {
             if( inputQueue.empty()) return nullptr;
 
             inputMutex.lock();
@@ -41,7 +41,7 @@ namespace ThreadAdapter {
             outputQueue.push(_outputPacket);
             outputMutex.unlock();
         }
-        inline Packet* popInOuputQueue(void) noexcept {
+        inline Packet* popInOutputQueue(void) noexcept {
 
             outputMutex.lock();
             Packet* returnPacket = outputQueue.front();

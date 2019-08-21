@@ -12,9 +12,15 @@ LogBase::LogBase(const string _dirRoot, shared_ptr<ThreadAdapter::AdapterThreadU
     adapterQueue = _adapterQueue;
 }
 
+const bool LogBase::checkAdapter(void) {
+    shared_ptr<ThreadAdapter::AdapterThreadUtility> adapterChecker = adapterQueue.lock();
+    if( adapterChecker) return true;
+    else return false;
+}
 //fileRoot의 폴더가 존재하지 않으면 false 반환
 // log_file : fileRoot/20XX_XX_XX.log
 const bool LogBase::writeLogToFile(LogPacket* _logPacket) {
+
 
     //디렉토리 유무 확인
     DIR* dp = nullptr;
@@ -40,10 +46,4 @@ const bool LogBase::writeLogToFile(LogPacket* _logPacket) {
     
     //delete _logPacket;
     return true;
-}
-
-const bool LogBase::checkAdapter(void) {
-    shared_ptr<ThreadAdapter::AdapterThreadUtility> adapterChecker = adapterQueue.lock();
-    if( adapterChecker) return true;
-    else return false;
 }

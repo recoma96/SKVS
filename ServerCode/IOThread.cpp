@@ -5,6 +5,7 @@
 #include "../lib/SockWrapper/NetworkingManager.hpp"
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/Tokenizer.hpp"
+#include "../lib/threadAdapter/AdapterThreadBridge.hpp"
 
 #include "../lib/Tokenizer.hpp"
 
@@ -20,6 +21,9 @@
 using namespace std;
 using namespace SockWrapperForCplusplus;
 
+extern unsigned int LogAdapterSerial_input;
+extern unsigned int DBAdapterSerial_input;
+extern unsigned int DBAdapterSerial_output;
 
 extern bool shutdownSignal; //종료 시그널
 
@@ -28,16 +32,28 @@ extern void IOThread(   UserList* userList,
                         Socket* sock,
                         CommandFilter* cmdFilter, 
                         map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge, 
-                        mutex* bridgeMutex   ) {
+                        mutex* bridgeMutex,   
+                        shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue) {
     
     //해당 클라이언트로부터 데이터 수신
 
     char loginBuf[48] = {0};
     bool isLoginInfoRight = false;
 
+    //브릿지 큐
+    weak_ptr<ThreadAdapter::AdapterThreadBridge> adapterBridgeQueue = _adpaterBridgeQueue;
+    LogPacket* logPacket = nullptr;
+
 
     if( recvData(sock, loginBuf, sizeof(char)*48) <= 0 ) {
-        cerr << "Connected defused from client" << endl;
+
+        string errorMsg("Connected defused from client - ");
+        errorMsg += sock->getIP();
+
+        logPacket = new LogPacket("Server", "Server", 0, 0, errorMsg);
+        cerr << logPacket->getStatement() << endl;
+        adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
         closeSocket(sock);
         delete sock;
         return;
@@ -64,7 +80,14 @@ extern void IOThread(   UserList* userList,
 
     //인증 결과 데이터 전송
     if( sendData(sock, &isLoginInfoRight, sizeof(bool)) <= 0) {
-        cerr << "Failed To Connect Client" << endl;
+
+        string errorMsg("Failed To Connect client - ");
+        errorMsg += sock->getIP();
+        
+        logPacket = new LogPacket("Server", "Server", 0, 0, errorMsg);
+        cerr << logPacket->getStatement() << endl;
+        adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
         closeSocket(sock);
         delete sock;
         return;
@@ -72,6 +95,15 @@ extern void IOThread(   UserList* userList,
     //인증이 틀린 경우
     if(!isLoginInfoRight) {
         //실페 로그패킷 전송
+
+        string errorMsg("This IP is failed to Login - ");
+        errorMsg += sock->getIP();
+        
+        logPacket = new LogPacket("Server", "Server", 0, 0, errorMsg);
+        cerr << logPacket->getStatement() << endl;
+        adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
+
         closeSocket(sock);
         delete sock;
         return;
@@ -79,7 +111,14 @@ extern void IOThread(   UserList* userList,
 
         UserLevel sendLevel = user.getUserLevel();
         if( sendData(sock, &sendLevel, sizeof(UserLevel)) <= 0) {
-            cerr << "Failed To Connect Client" << endl;
+            
+            string errorMsg("Failed To Connect client - ");
+            errorMsg += sock->getIP();
+        
+            logPacket = new LogPacket("Server", "Server", 0, 0, errorMsg);
+            cerr << logPacket->getStatement() << endl;
+            adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
             closeSocket(sock);
             delete sock;
             return;
@@ -107,6 +146,15 @@ extern void IOThread(   UserList* userList,
                                 (sock->getDiscripter(), userPacketBridge ));
 
     bridgeMutex->unlock();
+
+    //User Logined!
+    string alertMsg("This User is Logined. User : ");
+    alertMsg += user.getID();
+        
+    logPacket = new LogPacket("Server", "Server", 0, 0, alertMsg);
+    cout << logPacket->getStatement() << endl;
+    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
 
     //Send/Recv Thread 생성
 

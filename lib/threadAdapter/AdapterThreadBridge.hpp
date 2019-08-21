@@ -59,7 +59,7 @@ namespace ThreadAdapter {
                 selectIter++;
                 counter++;
             }
-
+            
             (*selectIter)->pipeBinarySemaphore.lock();
             (*selectIter)->pipeMutex.lock();
             (*selectIter)->pipe.push(_packet);
@@ -69,7 +69,7 @@ namespace ThreadAdapter {
         }
 
         //비어있는 경우,
-        inline Packet* popInQueue(const unsigned int _idx) noexcept {
+        inline Packet* popInQueue(const unsigned int _idx, const bool isBlocked) noexcept {
             if( _idx >= bridgeQueueContainer.size() ) return nullptr;
             
             vector<shared_ptr<BridgeQueue>>::iterator selectIter = 
@@ -80,12 +80,15 @@ namespace ThreadAdapter {
                 selectIter++;
                 counter++;
             }
-
-            cout << "shared number : " << selectIter->use_count() << endl;
             //비어있는 경우 블록상태
             //테스트 필요
-            while( (*selectIter)->pipe.empty() ) { 
+            if(isBlocked) {
+                while( (*selectIter)->pipe.empty() ) { 
                 
+                }
+            } else {
+                if((*selectIter)->pipe.empty())
+                    return nullptr;
             }   
 
             //입력이 들어오면 블록상태에서 빠져나감

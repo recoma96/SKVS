@@ -7,6 +7,8 @@
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/user/LoginedUserList.hpp"
 #include "../lib/CommandFilter.hpp"
+#include "../lib/threadAdapter/AdapterThreadUtility.hpp"
+#include "../lib/threadAdapter/AdapterThreadBridge.hpp"
 
 #include "../lib/database/DataBaseCmd.hpp"
 #include <string>
@@ -23,17 +25,33 @@ using namespace std;
 using namespace SockWrapperForCplusplus;
 
 bool shutdownSignal; //종료 시그널
+string logRoot; //로그 저장 위치
 
-extern void IOThread(UserList* userList, LoginedUserList* loginedUserList, Socket* sock,
-              CommandFilter* cmdFilter, map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge, mutex* bridgeMutex   );
+//어댑터 브릿지 패킷 일련변호
+unsigned int LogAdapterSerial_input = 0;
+unsigned int DBAdapterSerial_input = 1;
+unsigned int DBAdapterSerial_output = 2;
+
+//로그스레드를 연결할 어뎁터 스레드
+void StandaloneAdapterThreadToLog(shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue);
+
+
+extern void IOThread(UserList* userList, 
+					 LoginedUserList* loginedUserList, 
+					 Socket* sock,
+              		 CommandFilter* cmdFilter, 
+					 map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge, 
+					 mutex* bridgeMutex,
+					 shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue  );
 
 int main(void) {
 
-	cout << "================== SDKVS[SERVER] 0.1.0 Alpha ==================" << endl;
+	cout << "================== SKVS[SERVER] 0.1.0 Alpha ==================" << endl;
 	cout << endl;
 	shutdownSignal = false;
 	SystemLoader* systemLoader = nullptr;
 	AccountLoader* accountLoader = nullptr;
+	LogPacket* logPacket = nullptr; //로그패킷 제작 틀
 
 	//json파일로부터 데이터 파싱
 	try {
@@ -93,27 +111,53 @@ int main(void) {
 	//커멘드필터 생성
 	CommandFilter cmdFilter(userList);
 
+	//어댑터 브릿지 패킷 큐 생성
+	shared_ptr<ThreadAdapter::AdapterThreadBridge> adapterBridgeQueue = 
+		make_shared<ThreadAdapter::AdapterThreadBridge>();
+
+	thread logAdapterThread;
+
+	//로그 위치 구하기
+	logRoot = systemLoader->getLogRoot();
+
 	//TODO공통적으로 사용하는 쓰레드 생성
 
 	if(systemType == SYSTEMTYPE_DISTRIBUTED) {
 		//TODO차후에 생성 예정
 	} else if (systemType == SYSTEMTYPE_STANDALONE) {
-		//AdapterBridgeThread
+		
+		//어댑터 브랫지 패킷 큐 생성
+		//0번 : log input : 다른 스레드로부터 로그패킷 수집
+		//1번 : DB-input : 클라이언트로부터 명령패킷 수집
+		//2번 : DB-output
 
-		//Database, LogStorage Thread
+		adapterBridgeQueue->insertQueue();
+		adapterBridgeQueue->insertQueue();
+		adapterBridgeQueue->insertQueue();
+
+		//Database, LogStorage Thread 생성
+		logAdapterThread = thread(StandaloneAdapterThreadToLog,
+									adapterBridgeQueue);
+		
+		logAdapterThread.detach();
 	}
 
+	logPacket = new LogPacket("Server", "Server", 0, 0, "System Setting Complelete");
+	cout << logPacket->getStatement() << endl;
+	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
 	
-	cout << "System Setting Complelete" << endl;
 	//클라이언트 연결 요청 대기
 	while(!shutdownSignal) {
 
 		Socket* clientSocket = new Socket(); //IO쓰레드에서 처리하므로 pointer 처리
 		listenClient(&mainSocket, 1000);
 		if(!acceptClient(&mainSocket, clientSocket)) {
-			cerr << "failed to connect" << endl;
-			return 0;
-			//continue;
+
+			logPacket = new LogPacket("Server", "Server", 0, 0, "Accept Error");
+			adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
+			cerr << logPacket->getStatement() << endl;
+
+			continue;
 		}
 		
 		setSocketOption(clientSocket, SOL_SOCKET, SO_REUSEADDR, 
@@ -129,12 +173,19 @@ int main(void) {
 								 clientSocket,
 								 &cmdFilter,
 								 &packetBridge,
-								 &bridgeMutex);
+								 &bridgeMutex,
+								 adapterBridgeQueue);
 		iothread.detach();
 
 	}
+	logAdapterThread.join();
+
+	logPacket = new LogPacket("Server", "Server", 0, 0, "System Shutdown");
+	cout << logPacket->getStatement() << endl;
+	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
 
 	closeSocket(&mainSocket);
+	
 
 	return 0;
 }

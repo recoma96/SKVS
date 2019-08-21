@@ -78,6 +78,7 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
         }
         //패킷 큐에 삽입
         packetQueue->push(savePacket);
+        delete[] recvBuf;
     }
 
 

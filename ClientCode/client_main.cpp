@@ -20,7 +20,7 @@ extern void IOThread(User* userInfo, Socket* socket);
 bool isShutdown = false; //shotdown flag
 int main(void) {
 
-	cout << "================== SDKVS[CLIENT] 0.1.0 Alpha ==================" << endl;
+	cout << "================== SKVS[CLIENT] 0.1.0 Alpha ==================" << endl;
 	cout << endl;
 
 	//1.login.json에서 로그인 정보 파싱
@@ -99,6 +99,10 @@ int main(void) {
 		this_thread::sleep_for(chrono::milliseconds(1));
 	}
 
+	//종료 시그널이 송출됬을 경우
+	//iothread가 종료될 때까지 기다림
+	iothread.join();
+	cout << "SKVS out" << endl;
 	closeSocket(&socket);
 	return 0;
 }

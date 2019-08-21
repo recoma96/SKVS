@@ -7,16 +7,20 @@
 #include <queue>
 #include <deque>
 #include <vector>
+#include <string.h>
 
 #include "../lib/SockWrapper/ClientSocketManager.hpp"
 #include "../lib/SockWrapper/NetworkingManager.hpp"
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/user/User.hpp"
 #include "../lib/packet/Packet.hpp"
+#include "../lib/packet/SerialController.hpp"
 
 #include "../lib/Exception.hpp"
+#include "../lib/Tokenizer.hpp"
 
 using namespace SockWrapperForCplusplus;
+using namespace PacketSerialData;
 using namespace std;
 
 //명령스레드 시리얼 번호 계산
@@ -26,22 +30,19 @@ inline int setCmdSerial(vector<int>& serialList) {
 
 	if( serialList.empty() ) {
 
-		serialList.push_back(0);
 		return 0;
 	}
 	for( vector<int>::iterator iter = serialList.begin();
 			iter != serialList.end(); iter++ ) {
 
-		if( counter != (*iter) ) {
-			return counter;
-		}
-		counter++;
+		if( counter < (*iter))
+            counter = (*iter);
 	}
 	return counter;
 }
 
 //시리얼 번호 제거
-inline bool removeSerialNum(vector<int>& serialList, int removeNum) {
+bool removeSerialNum(vector<int>& serialList, int removeNum) {
 
 	for( vector<int>::iterator deleteCursor = serialList.begin();
 			deleteCursor != serialList.end();
@@ -57,14 +58,22 @@ inline bool removeSerialNum(vector<int>& serialList, int removeNum) {
 }
 
 extern bool isShutdown;
-
+extern void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue);
+extern void CmdThread(int cmdNum, 
+                        queue<Packet*, deque<Packet*>>* packetQueue, 
+                        vector<int>* cmdSerialList, 
+                        string cmdInterface, 
+                        mutex* packetQueueMutex);
 
 //IO Thread
 void IOThread(User* userInfo, Socket* socket) {
     
     string cmd; //명령어 입력하는 부분
     queue<Packet*, deque<Packet*>> packetQueue; //패킷 큐
+    mutex packetQueueMutex; //패킷 큐 mutex
+
     vector<int> cmdSerialList; //cmd시리얼 리스트
+    mutex cmdSerialMutex; //cmd시리얼 번호를 생성/삭제에 있어서 사용하는 mutex
 
     string cmdInterFace; cmdInterFace.clear();
     cmdInterFace += userInfo->getID();
@@ -76,9 +85,57 @@ void IOThread(User* userInfo, Socket* socket) {
     else
         cmdInterFace += " > ";
 
+    //RecvThread 생성
+    thread recvThread = thread(RecvThread, socket, &packetQueue );
+    recvThread.detach();
+
     while(!isShutdown) {
+
+        int cmdSerial = 0; //시리얼 번호 할당 변수
+        int packetSize = 0; //서버에게 보낼 패킷 사이즈
+
         cout << cmdInterFace;
         getline(cin, cmd, '\n');
+
+        if( cmd.length() == 0) continue;
+        vector<string> cmdVec = tok::tokenizer(cmd);
+
+        //시리얼 넘버 계산
+        cmdSerialMutex.lock();
+        cmdSerial = setCmdSerial(cmdSerialList);
+        cmdSerialList.push_back(cmdSerial);
+        cmdSerialMutex.unlock();
+
+        //명령 스레드를 생성합니다.
+        thread cmdThread = thread(CmdThread,
+                                    cmdSerial, 
+                                    &packetQueue, 
+                                    &cmdSerialList, 
+                                    cmdInterFace, 
+                                    &packetQueueMutex);
+        cmdThread.detach();
+
+        //서버에 데이터를 보냅니다.
+
+        //길이 -> 패킷 직렬화 -> 직렬화된 패킷 전송
+        SendCmdPacket sendPacket(userInfo->getID(), socket->getIP(), cmdSerial, 0, cmd);
+
+        char* sendStr = makePacketToCharArray<SendCmdPacket>(sendPacket);
+        int sendStrSize = strlen(sendStr);
+        
+        //패킷 전송
+
+        if( sendData(socket, &sendStrSize, sizeof(int)) >= 0) {
+            cerr << "Server Disconnected" << endl;
+            isShutdown = true;
+            continue;
+        }
+        if( sendData(socket, sendStr, sendStrSize) >= 0) {
+            cerr << "Server Disconnected" << endl;
+            isShutdown = true;
+            continue;
+        }
+        delete sendStr;
     }
 
 }
