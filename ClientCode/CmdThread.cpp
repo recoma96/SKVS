@@ -8,6 +8,7 @@
 using namespace std;
 using namespace structure;
 
+extern mutex printMutex;
 extern bool removeSerialNum(vector<int>& serialList, int removeNum);
 extern bool isShutdown;
 //Cmd가 받는 데이터 순서
@@ -20,6 +21,7 @@ void CmdThread(int cmdNum,
                 mutex* packetQueueMutex) {
     //cmdInterface는 사용자 입장에서 멀티스레드형식으로 수행될 경우
     //입력 인터페이스가 안보이므로 cmdThread가 명령수행이 끝나면 cmdIterface를 출력합니다.
+    vector<string> printVector;
     while(!isShutdown) {
         if(!packetQueue->empty()) {
             //cmd번호 확인
@@ -28,12 +30,11 @@ void CmdThread(int cmdNum,
 
                 //패킷 큐에서 패킷 받기
                 packetQueueMutex->lock();
-
                 Packet* recvPacket = packetQueue->front();
-
                 packetQueue->pop();
                 packetQueueMutex->unlock();
 
+            
                 //패킷 타입 검색
                 switch(recvPacket->getPacketType()) {
 
@@ -45,17 +46,17 @@ void CmdThread(int cmdNum,
                             //프린트 양식 : key \t\t structtype \t\t datatype \n
 
                             RecvDataPacket* printDataPacket = (RecvDataPacket*)recvPacketAboutData;
-                            cout << printDataPacket->getData().getDataToString() << "\t\t" 
-                                << convertDataTypeToString(printDataPacket->getData().getDataType()) << "\t\t"
-                                << convertStructTypeToString(printDataPacket->getData().getStructType()) << endl;
+                            string resultStr = printDataPacket->getData().getDataToString() + "\t\t" 
+                                + convertDataTypeToString(printDataPacket->getData().getDataType()) + "\t\t"
+                                + convertStructTypeToString(printDataPacket->getData().getStructType());
+                            printVector.push_back(resultStr);
 
                             delete printDataPacket;
                             
                         } else {
                             //프린트 양식 : 걍 다 필요없고 그냥 싹다 프린팅
                             RecvMsgPacket* printDataPacket = (RecvMsgPacket*)recvPacketAboutData;
-                            cout << printDataPacket->getMsg() << endl;
-
+                            printVector.push_back(printDataPacket->getMsg());
                             delete printDataPacket;
                         }
                     }
@@ -76,6 +77,13 @@ void CmdThread(int cmdNum,
                             break;
                             case SIGNALTYPE_RECVEND: //수신 종료
                                 delete signalPacket;
+                                //데이터 출력
+                                printMutex.lock();
+                                cout << printVector.size() << endl;
+                                for( int i = 0; i < printVector.size(); i++ ) {
+                                    cout << printVector[i] << endl;
+                                }
+                                printMutex.unlock();
                                 removeSerialNum(*cmdSerialList, cmdNum);
                                 return;
                             break;
