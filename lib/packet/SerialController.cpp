@@ -124,10 +124,8 @@ char* makePacketToCharArray<RecvMsgPacket>(RecvMsgPacket& _targetPacket) noexcep
     RecvPacketSerial* insertedPacket = makeRecvPacketSerial(_targetPacket);
     packetSerial.set_allocated_recvpacket(insertedPacket);
 
-    //2. string
     packetSerial.set_msg(_targetPacket.getMsg());
 
-    
     //직렬화 시행
     int bufSize = packetSerial.ByteSizeLong();
     char* outputBuf = new char[bufSize];
@@ -181,37 +179,18 @@ char* makePacketToCharArray<LogPacket>(LogPacket& _targetPacket) noexcept {
     return outputBuf;
 
 }
-
-//패킷타입 알아보기
-const PacketType whatIsPacketTypeInSerializedStr(char* _targetStr) {
-
-    int bufSize = strlen(_targetStr);
-    protobuf::io::ArrayInputStream is(_targetStr, bufSize);
-
-    PacketSerial checkTypeSerial;
-    checkTypeSerial.ParseFromZeroCopyStream(&is);
-
-    try {
-        PacketType returnType = PacketTypeConverter::intToDataType<PacketType>(checkTypeSerial.packettype());
-        return returnType;
-    } catch (DataConvertException e) {
-        throw e;
-    }
-}
-
 //리시브패킷의 새부타입
 const RecvPacketType whatIsRecvPacketTypeInRecvDataSerial(char* _targetStr) {
     try {
-        if(!whatIsPacketTypeInSerializedStr(_targetStr) != PACKETTYPE_RECV)
-            throw DataConvertException("this pakcet is not recv packet");
 
         const int bufSize = strlen(_targetStr);
         protobuf::io::ArrayInputStream is(_targetStr, bufSize);
 
-        RecvPacketSerial packetSerial;
+        RecvDataPacketSerial packetSerial;
         packetSerial.ParseFromZeroCopyStream(&is);
+        RecvPacketSerial* check = packetSerial.release_recvpacket();
 
-        RecvPacketType returnType = PacketTypeConverter::intToDataType<RecvPacketType>(packetSerial.recvpackettype());
+        RecvPacketType returnType = PacketTypeConverter::intToDataType<RecvPacketType>(check->recvpackettype());
         return returnType;
     } catch(DataConvertException e) {
         throw e;
