@@ -25,10 +25,6 @@ void LogThread(shared_ptr<AdapterThreadUtility> adapterUtility, bool* logThreadi
         //input queue에 데이터들어올때까지 대기
         while(adapterUtility->isInputQueueEmpty()) {
             this_thread::sleep_for(chrono::milliseconds(1));
-            if(shutdownSignal) { 
-                *logThreadisDead = true;
-                return;
-            }
         }
 
         Packet* recvPacket = adapterUtility->popInInputQueue();
@@ -50,9 +46,9 @@ void LogThread(shared_ptr<AdapterThreadUtility> adapterUtility, bool* logThreadi
         delete (LogPacket*)(recvPacket);
         continue;
 
-
         //서버에 프린팅    
 
     }
+    *logThreadisDead = true;
     
 }

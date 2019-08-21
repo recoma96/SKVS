@@ -25,7 +25,7 @@ void StandaloneAdapterThreadToLog(shared_ptr<AdapterThreadBridge> _adpaterBridge
 
     //AdapterSendThread 실행 <로그에 대한 추가 기능이 들어갈 경우 구현 예정>
 
-    while(!shutdownSignal) {
+    while(!logThreadisDead) {
         if(!logThreadisDead) {
             shared_ptr<AdapterThreadBridge> checkPacket = adapterBridgeQueue.lock();
 

@@ -173,12 +173,12 @@ int main(void) {
 		this_thread::sleep_for(chrono::milliseconds(1));
 
 	}
-	logAdapterThread.join();
+	
 
 	logPacket = new LogPacket("Server", "Server", 0, 0, "System Shutdown");
 	cout << logPacket->getStatement() << endl;
 	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
-
+	logAdapterThread.join();
 	closeSocket(&mainSocket);
 	
 
