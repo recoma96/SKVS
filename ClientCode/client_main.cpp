@@ -93,7 +93,6 @@ int main(void) {
 
 	//IO Thread 생성
 	thread iothread = thread(IOThread, &myUser, &socket);
-	iothread.detach();
 
 	//while문
 	while(!isShutdown) {

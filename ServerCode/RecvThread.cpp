@@ -6,6 +6,7 @@
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/threadAdapter/AdapterThreadBridge.hpp"
 #include "../lib/packet/SerialController.hpp"
+#include "../lib/CommandList.hpp"
 
 #include <string>
 #include <deque>
@@ -19,6 +20,7 @@
 using namespace std;
 using namespace SockWrapperForCplusplus;
 using namespace PacketSerialData;
+using namespace CommandList;
 
 extern unsigned int LogAdapterSerial_input;
 extern unsigned int DBAdapterSerial_input;
@@ -46,11 +48,15 @@ void RecvThread(Socket* socket,
         LogPacket* logPacket = nullptr;
 
         //데이터받기
-        if( recvData(socket, &recvBufSize, sizeof(int)) <= 0) {
+        if( recvData(socket, &recvBufSize, sizeof(int)) <= 0 ) {
             
-            logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-            cerr << logPacket->getStatement() << endl;
-            adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+            //클라이언트를 종료 시킬 경우 이 스레드가 남으므로
+            //차후에 개선할 예정
+            if(*isDisConnected != true) {
+                logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
+                cerr << logPacket->getStatement() << endl;
+                adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+            }
 
             *isDisConnected = true;
             continue;
@@ -106,6 +112,20 @@ void RecvThread(Socket* socket,
             case TASKMILESTONE_SETUSERS:
             break;
             case TASKMILESTONE_SYSTEM:
+            {
+                //quit : 시스템 종료
+                string quit = System_Control::quit+"\n";
+                if(recvPacket->getCmdArray()[0].compare(quit)) {
+                    sendPacketQueue.lock()->push(new SignalPacket(user->getID(),
+                                                        socket->getIP(),
+                                                        recvPacket->getCmdNum(),
+                                                        socket->getDiscripter(),
+                                                        SIGNALTYPE_SHUTDOWN
+                    ));
+
+                    //*isDisConnected = true;
+                }
+            }
             break;
             default: //error noauth
             {
@@ -132,7 +152,6 @@ void RecvThread(Socket* socket,
                                          socket->getDiscripter(),
                                          errorMsg
                 ));
-
                 //시그널 패킷 삽입
                 sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
                                         socket->getIP(),

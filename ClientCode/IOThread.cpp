@@ -61,6 +61,7 @@ mutex printMutex;
 //멀티스레드 기반 프로그램이므로
 //동시에 결과가 끝나는 것을 대비해
 //상호배제를 사용하여 결과 출력을 순차적으로 합니다.
+
 extern bool isShutdown;
 extern void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue);
 extern void CmdThread(int cmdNum, 
@@ -103,6 +104,8 @@ void IOThread(User* userInfo, Socket* socket) {
 
         cout << cmdInterFace;
         getline(cin, cmd, '\n');
+
+        if(isShutdown) return; //서버측에서 종료요청을 받았을 경우
 
         if( cmd.length() == 0) continue;
         vector<string> cmdVec = tok::tokenizer(cmd);

@@ -183,7 +183,6 @@ void IOThread(   UserList* userList,
                       &isDisConnected
     );
     recvThread.detach();
-
     //SendTrhead
     thread sendThread(SendThread,
                       sock,
@@ -193,7 +192,6 @@ void IOThread(   UserList* userList,
                       &isDisConnected
 
     );
-    sendThread.detach();
     
     
     //while진입
@@ -201,6 +199,11 @@ void IOThread(   UserList* userList,
         this_thread::sleep_for(chrono::milliseconds(1));
     }
 
+    //클라이언트로부터 종료를 시도할 경우
+    //sendThread가 클라이언트에게 종료시그널을 보낼 때 까지 기다린다.
+    sendThread.join();
+    //recvThread.join();
+    
     if(isDisConnected) {
         //패킷 브릿지 삭제
         packetBridge->erase(sock->getDiscripter());

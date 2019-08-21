@@ -34,6 +34,8 @@ void SendThread(Socket* socket,
     weak_ptr<ThreadAdapter::AdapterThreadBridge> adapterBridgeQueue = _adapterBridgeQueue;
     LogPacket* logPacket = nullptr;
 
+    bool disconnectedBuf = false;
+
     while(!(*isDisConnected) && !shutdownSignal) {
         
         if(!(sendPacketQueue.lock()->empty())) {
@@ -67,6 +69,12 @@ void SendThread(Socket* socket,
                 {
                     sendBuf = makePacketToCharArray<SignalPacket>( *((SignalPacket*)(sendPacket)) );
                     bufSize = strlen(sendBuf);
+
+                    if( ((SignalPacket*)(sendPacket))->getSignal() == SIGNALTYPE_SHUTDOWN ) {
+                        
+                        disconnectedBuf = true;
+                    }
+
                     delete sendPacket;
                 }
                 break;
@@ -118,6 +126,10 @@ void SendThread(Socket* socket,
             }
 
             delete sendBuf;
+
+
+            if(disconnectedBuf == true)
+                (*isDisConnected) = true;
 
         }
 
