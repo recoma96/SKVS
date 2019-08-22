@@ -35,6 +35,7 @@ namespace structure {
 		StructType getValueStructType(void) const noexcept;
 		d_size_t getValueSize(void) const noexcept;
 		void setValue(string _value, DataType _valueType) const noexcept;
+		DataElement& getValue(void) { return *value; }
 
 
 	};
