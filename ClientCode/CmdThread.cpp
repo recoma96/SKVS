@@ -88,9 +88,12 @@ void CmdThread(int cmdNum,
                             break;
 
                             case SIGNALTYPE_ERROR: //시스템 에러
-                                //근데 얘는 클라이언트로 올라오면 안됨
-                                cerr << "System Error : Error Signal must not go to client" << endl;
+                                //패킷이 옳지 않은 방향으로 접근할 경우
+                                //TODO이 에러가 발생할 경우 디버깅 필수
+                                cerr << "Server Error : Your Command is extinguish becuase It accesses invaild way" << endl;
                                 delete signalPacket;
+                                removeSerialNum(*cmdSerialList, cmdNum);
+                                return;
                             break;
                         }
                     }

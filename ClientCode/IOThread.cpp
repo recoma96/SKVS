@@ -108,6 +108,8 @@ void IOThread(User* userInfo, Socket* socket) {
         if( cmd.length() == 0) continue;
         vector<string> cmdVec = tok::tokenizer(cmd);
 
+        if(cmdVec.empty()) continue;
+
         //시리얼 넘버 계산
         cmdSerialMutex.lock();
         cmdSerial = setCmdSerial(cmdSerialList);

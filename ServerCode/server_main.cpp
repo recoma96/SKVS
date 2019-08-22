@@ -10,7 +10,7 @@
 #include "../lib/threadAdapter/AdapterThreadUtility.hpp"
 #include "../lib/threadAdapter/AdapterThreadBridge.hpp"
 
-#include "../lib/database/DataBaseCmd.hpp"
+
 #include <string>
 #include <list>
 #include <map>

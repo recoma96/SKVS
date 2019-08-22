@@ -13,5 +13,10 @@ void DataBaseCmdThread(
     SendCmdPacket* requestPacket,
     SKVS_DataBase::DataBase* DB
 ) {
-            
+    
+    //명령문 실행
+    DB->runCmd(*requestPacket);
+
+    //패킷 소멸
+    delete requestPacket;
 }

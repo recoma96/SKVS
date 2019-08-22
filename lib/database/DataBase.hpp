@@ -15,6 +15,7 @@
 #include <mutex>
 
 #include "../structure/DataElement.hpp"
+#include "../packet/Packet.hpp"
 #include "../threadAdapter/AdapterThreadUtility.hpp"
 
 using namespace std;
@@ -30,9 +31,8 @@ namespace SKVS_DataBase {
         map<shared_ptr<DataElement>, unique_ptr<mutex>> mutexMap;
         weak_ptr<AdapterThreadUtility> queueAdapter;
 
-        /*
-            Data Functions
-        */
+        //Data Functions
+        void create(SendCmdPacket& _requestPacket);
 
     public:
         explicit DataBase(shared_ptr<AdapterThreadUtility>& adapter) {
@@ -45,7 +45,7 @@ namespace SKVS_DataBase {
             else return false;
         }
         //명령문 실행
-        void runCmd(vector<string>& cmdVec);
+        void runCmd(SendCmdPacket& _requestPacket);
         weak_ptr<DataBase> getWeekPtr() { return weak_from_this(); }
     };
 }
