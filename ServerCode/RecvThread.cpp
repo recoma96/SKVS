@@ -10,6 +10,7 @@
 #include "../lib/CommandList.hpp"
 #include "../lib/loader/SystemLoader.hpp"
 #include "../lib/loader/AccountLoader.hpp"
+#include "../lib/Tokenizer.hpp"
 
 #include <string>
 #include <deque>
@@ -123,7 +124,7 @@ void RecvThread(Socket* socket,
             
             case TASKMILESTONE_DATABASE:
                 //데이터베이스 입력 패킷 큐로 패킷을 이동
-                adapterBridgeQueue.lock()->pushInQueue(recvPacket, DBAdapterSerial_input);
+                //adapterBridgeQueue.lock()->pushInQueue(recvPacket, DBAdapterSerial_input);
             break;
             case TASKMILESTONE_SETUSERS: //유저 세팅
             {
@@ -153,6 +154,12 @@ void RecvThread(Socket* socket,
                     } else if(!( recvPacket->getCmdArray()[2].length() >= MIN_PSWD_LENGTH && 
                                 recvPacket->getCmdArray()[2].length() <= MAX_PSWD_LENGTH)) {
                         msg = "Password size must between 8 and 16";
+                        logMsg = "useradd failed";
+                    
+                    //아이디 문자 유효성 확인
+                    } else if(!tok::IsAllowedCharacter(recvPacket->getCmdArray()[1], R"(~!@#$%^&*()_+-=[];'./,>{}:"<?")")) {
+                        msg = R"(~!@#$%^&*()_+-=[];'./,>{}:"<?")"; 
+                        msg += "is not allowd in username";
                         logMsg = "useradd failed";
                     } else {
                     //유저 레벨 유효성 확인

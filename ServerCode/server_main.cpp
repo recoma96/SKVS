@@ -152,14 +152,17 @@ int main(void) {
 		//Database, LogStorage Thread 생성
 		logAdapterThread = thread(StandaloneAdapterThreadToLog,
 									adapterBridgeQueue);
-		dataBaseAdapterThread = thread(StandAloneAdapterThreadToDataBase,
-										adapterBridgeQueue, &packetBridge);
+		dataBaseAdapterThread = thread(
+			_adpaterBridgeQueue,
+			&packetBridge
+		);
 
 	}
 
 	logPacket = new LogPacket("Server", "Server", 0, 0, "System Setting Complelete");
 	cout << logPacket->getStatement() << endl;
 	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
+	
 
 	//로그인 중계하는 스레드 생성
 	
@@ -189,8 +192,6 @@ int main(void) {
 	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
 
 	logAdapterThread.join();
-	dataBaseAdapterThread.join();
-
 	closeSocket(&mainSocket);
 	
 

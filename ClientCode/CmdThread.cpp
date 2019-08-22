@@ -1,6 +1,8 @@
 #include <queue>
 #include <deque>
 #include <mutex>
+#include <thread>
+#include <chrono>
 
 #include "../lib/packet/Packet.hpp"
 #include "../lib/structure/TypePrinter.hpp"

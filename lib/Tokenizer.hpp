@@ -21,7 +21,7 @@ using namespace std;
 
 namespace tok {
 
-	static vector<string> tokenizer(const string& data, const char delimiter=' ') {
+	inline static vector<string> tokenizer(const string& data, const char delimiter=' ') {
 
 		vector<string> result;
 		string token;
@@ -34,6 +34,18 @@ namespace tok {
 		}
 		return result;
 	}
+
+	inline static bool IsAllowedCharacter(string targetStr, string allowedCharacters) {
+
+	    for(int i = 0; i < targetStr.length(); i++) {
+
+		    for(int j = 0; j < allowedCharacters.length(); j++) {
+			    if( targetStr[i] == allowedCharacters[j] )
+				    return false;
+		    }
+	    }
+	    return true;
+    }
 }
 
 #endif

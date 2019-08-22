@@ -27,9 +27,15 @@ namespace SKVS_DataBase {
     class DataBase : public std::enable_shared_from_this<DataBase> {
     private:
         //member
-        list<shared_ptr<DataElement>> mainDataBase;
-        map<shared_ptr<DataElement>, unique_ptr<mutex>> mutexMap;
+        list<DataElement*> dataBase;
+        map<DataElement*, unique_ptr<mutex>> mutexMap;
         weak_ptr<AdapterThreadUtility> queueAdapter;
+
+        //데이터 루트 찾기
+        DataElement* findDatabyRoot(const string root, string& errorMsg);
+
+        //예외처리
+        void exceptError(SendCmdPacket& _requestPacket, string errorMsg);
 
         //Data Functions
         void create(SendCmdPacket& _requestPacket);
