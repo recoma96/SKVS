@@ -124,7 +124,7 @@ const bool StaticList::updateData(const string _targetValue, const string _value
     //수정 할 데이터 찾기
     for(list<shared_ptr<DataElement>>::iterator targetIter = this->valueList.begin();
         targetIter != this->valueList.end(); targetIter++ ) {
-        if( (*targetIter)->getDataToString().compare(_value) == 0) {
+        if( (*targetIter)->getDataToString().compare(_targetValue) == 0) {
             (*targetIter)->setData(_value, this->structureDataType);
             return true;
         }
