@@ -24,7 +24,7 @@ void LogThread(shared_ptr<AdapterThreadUtility> adapterUtility, bool* logThreadi
         
         //input queue에 데이터들어올때까지 대기
         while(adapterUtility->isInputQueueEmpty()) {
-            this_thread::sleep_for(chrono::microseconds(10));
+            this_thread::sleep_for(chrono::milliseconds(1));
         }
 
         Packet* recvPacket = adapterUtility->popInInputQueue();

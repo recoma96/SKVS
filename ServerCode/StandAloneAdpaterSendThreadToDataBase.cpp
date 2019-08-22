@@ -7,6 +7,7 @@
 #include <map>
 #include <queue>
 #include <deque>
+#include <string>
 
 extern bool shutdownSignal;
 extern unsigned int LogAdapterSerial_input;
@@ -29,8 +30,6 @@ void StandAloneAdapterSendThreadToDataBase(
     //내부에서의 데이터 패킷 큐를 검사 (Output)
     while(!shutdownSignal) {
         
-        
-        
         if(!pipe.lock()->isOutputQueueEmpty()) {
             //패킷 검사
             sendPacket = pipe.lock()->popInOutputQueue();
@@ -38,8 +37,11 @@ void StandAloneAdapterSendThreadToDataBase(
             // Cmd를 제외한 나머지 3가지
             switch( sendPacket->getPacketType()) {
                 case PACKETTYPE_LOG:
+                    //로그데이터를 서버에 프린팅하고
                     //로그스레드로 이동
+                    cout << ((LogPacket*)(sendPacket))->getStatement() << endl;
                     adapterBridgeQueue.lock()->pushInQueue(sendPacket, LogAdapterSerial_input);
+                    
                 break;
 
                 case PACKETTYPE_SIGNAL:
@@ -69,6 +71,6 @@ void StandAloneAdapterSendThreadToDataBase(
             sendPacket = nullptr;
         }
         
-        this_thread::sleep_for(chrono::microseconds(10));
+        this_thread::sleep_for(chrono::milliseconds(1));
     }
 }

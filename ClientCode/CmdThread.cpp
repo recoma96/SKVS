@@ -24,6 +24,8 @@ void CmdThread(int cmdNum,
     //cmdInterface는 사용자 입장에서 멀티스레드형식으로 수행될 경우
     //입력 인터페이스가 안보이므로 cmdThread가 명령수행이 끝나면 cmdIterface를 출력합니다.
     vector<string> printVector;
+
+    bool isStarted = false;
     while(!isShutdown) {
         if(!packetQueue->empty()) {
             //cmd번호 확인
@@ -65,7 +67,13 @@ void CmdThread(int cmdNum,
                     case PACKETTYPE_SIGNAL:
                     {
                         SignalPacket* signalPacket = (SignalPacket*)recvPacket;
-                        switch( signalPacket->getSignal()) {
+                        auto sig = signalPacket->getSignal();
+
+                        //잘못된 RECVEND신호 바로잡기
+                        if( sig == SIGNALTYPE_RECVSTART && isStarted )
+                            sig =  SIGNALTYPE_RECVEND;
+
+                        switch( sig) {
 
                             case SIGNALTYPE_SHUTDOWN: //종료
                                 isShutdown = true;
@@ -73,6 +81,7 @@ void CmdThread(int cmdNum,
                             break;
                             case SIGNALTYPE_RECVSTART: //수신 시작
                                 delete signalPacket;
+                                isStarted = true;
                             break;
                             case SIGNALTYPE_ERROR:
                             case SIGNALTYPE_RECVEND: //수신 종료

@@ -28,11 +28,11 @@ namespace SKVS_DataBase {
     private:
         //member
         list<DataElement*> dataBase;
-        map<DataElement*, unique_ptr<mutex>> mutexMap;
+        map<DataElement*, shared_ptr<mutex>> mutexMap;
         weak_ptr<AdapterThreadUtility> queueAdapter;
 
         //데이터 루트 찾기
-        DataElement* findDatabyRoot(const string root, string& errorMsg);
+        DataElement* findDataByRoot(const string root, string& errorMsg);
 
         //예외처리
         void exceptError(SendCmdPacket& _requestPacket, string errorMsg);
@@ -41,6 +41,14 @@ namespace SKVS_DataBase {
         void create(SendCmdPacket& _requestPacket);
         void drop(SendCmdPacket& _requestPacket);
         void insert(SendCmdPacket& _requestPacket);
+        void get(SendCmdPacket& _requestPacket);
+        void set(SendCmdPacket& _requestPacket);
+        void _delete(SendCmdPacket& _requestPacket);
+        void link(SendCmdPacket& _requestPacket);
+        void unlink(SendCmdPacket& _requestPacket);
+        void getsize(SendCmdPacket& _requestPacket);
+        void getkey(SendCmdPacket& _requestPacket);
+        void _list(SendCmdPacket& _requestPacket);
 
     public:
         explicit DataBase(shared_ptr<AdapterThreadUtility>& adapter) {

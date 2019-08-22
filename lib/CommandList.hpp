@@ -27,15 +27,12 @@ namespace CommandList {
         const string GetSize="getsize";
         const string GetKey="getkey";
         const string List="list";
-
-        const string DisplayUsage="display-usage";
     }
 
     namespace User_Setting {
 
         const string userAdd = "useradd"; //ex useradd newUser, newPswd
         const string userDel = "userdel";     
-
     }
 
     namespace System_Control {

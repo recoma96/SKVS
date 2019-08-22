@@ -40,7 +40,7 @@ void StandaloneAdapterThreadToLog(shared_ptr<AdapterThreadBridge> _adpaterBridge
             continue;
         }
 
-        this_thread::sleep_for(chrono::microseconds(10));
+        this_thread::sleep_for(chrono::milliseconds(1));
     }
 
     logThread.join();

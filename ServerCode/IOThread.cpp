@@ -200,7 +200,7 @@ void IOThread(   UserList* userList,
     
     //while진입
     while(!shutdownSignal && !isDisConnected ) {
-        this_thread::sleep_for(chrono::microseconds(10));
+        this_thread::sleep_for(chrono::milliseconds(1));
     }
 
     //클라이언트로부터 종료를 시도할 경우
