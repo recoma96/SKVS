@@ -118,6 +118,13 @@ public:
                 RecvPacket(_username, _IP, _cmdNum, _sock, RECVPACKETTYPE_DATA) {
         data = _data;
     }
+    //클라이언트로부터 받은 패킷정보를 이용해서 패킷을 생성합니다.
+    RecvDataPacket(SendCmdPacket& _reqPacket, structure::DataElement _data) : 
+        RecvPacket(_reqPacket.getUserName(), _reqPacket.getIP(), _reqPacket.getCmdNum(), 
+                    _reqPacket.getSock(), RECVPACKETTYPE_DATA) {
+
+        data = _data;
+    }
     inline const structure::DataElement getCopiedData(void) {  return data; }
     inline structure::DataElement& getData(void) { return data; }
 };
@@ -129,6 +136,13 @@ public:
     RecvMsgPacket(const string _username, const string _IP,
                     const int _cmdNum, const int _sock, const string _msg) :
                 RecvPacket(_username, _IP, _cmdNum, _sock, RECVPACKETTYPE_MSG) {
+        msg = _msg;
+    }
+    //클라이언트로부터 받은 패킷정보를 이용해서 패킷을 생성합니다.
+    RecvMsgPacket(SendCmdPacket& _reqPacket, const string _msg) : 
+        RecvPacket(_reqPacket.getUserName(), _reqPacket.getIP(), _reqPacket.getCmdNum(), 
+                    _reqPacket.getSock(), RECVPACKETTYPE_MSG) {
+
         msg = _msg;
     }
     inline const string getMsg(void) {  return  msg; }
@@ -144,6 +158,13 @@ public:
                 Packet(PACKETTYPE_SIGNAL, _username, _IP, _cmdNum, _sock) {
         signal = _signal;
     }
+    //클라이언트로부터 받은 패킷정보를 이용해서 패킷을 생성합니다.
+    SignalPacket(SendCmdPacket& _reqPacket, const SignalType _signal) : 
+        Packet(PACKETTYPE_SIGNAL, _reqPacket.getUserName(), _reqPacket.getIP(), _reqPacket.getCmdNum(), 
+                    _reqPacket.getSock()) {
+
+        signal = _signal;
+    }
     inline const SignalType getSignal(void) { return signal; }
 };
 
@@ -157,6 +178,14 @@ public:
     LogPacket(const string _username, const string _IP, const int _cmdNum,
                 const int _sock, const string _str) :
             Packet(PACKETTYPE_LOG, _username, _IP, _cmdNum, _sock) {
+        str = _str;
+        dateFormat = CalTime::currentDataTime();
+    }
+    //클라이언트로부터 받은 패킷정보를 이용해서 패킷을 생성합니다.
+    LogPacket(SendCmdPacket& _reqPacket, const string _str) : 
+        Packet(PACKETTYPE_LOG, _reqPacket.getUserName(), _reqPacket.getIP(), _reqPacket.getCmdNum(), 
+                    _reqPacket.getSock()) {
+        
         str = _str;
         dateFormat = CalTime::currentDataTime();
     }
