@@ -96,7 +96,7 @@ int main(void) {
 
 	//while문
 	while(!isShutdown) {
-		this_thread::sleep_for(chrono::milliseconds(1));
+		this_thread::sleep_for(chrono::microseconds(10));
 	}
 
 	//종료 시그널이 송출됬을 경우

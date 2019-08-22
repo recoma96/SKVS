@@ -104,6 +104,7 @@ void CmdThread(int cmdNum,
                 }
             }
         }
+        this_thread::sleep_for(chrono::microseconds(10));
     }
 
 

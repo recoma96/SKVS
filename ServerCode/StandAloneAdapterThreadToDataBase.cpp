@@ -57,7 +57,7 @@ void StandAloneAdapterThreadToDataBase(
             recvPacket = nullptr;
             continue;
         }
-        this_thread::sleep_for(chrono::milliseconds(1));
+        this_thread::sleep_for(chrono::microseconds(10));
     }
 
     sendThread.join();

@@ -133,7 +133,7 @@ void SendThread(Socket* socket,
 
         }
 
-        this_thread::sleep_for(chrono::milliseconds(1));   
+        this_thread::sleep_for(chrono::microseconds(10));
     }
 
 }
