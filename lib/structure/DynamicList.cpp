@@ -99,7 +99,7 @@ const list<DataElement> DynamicList::searchIndex(const string _indexCondition) {
 
 const bool DynamicList::deleteIndex(const string _indexCondition) {
 
-    vector<string> toked = tok::tokenizer(_indexCondition);
+    vector<string> toked = tok::tokenizer(_indexCondition, '-');
     IsInIndex isInIndex;
 
     if( !isInIndex( toked, this->length))
@@ -117,7 +117,10 @@ const bool DynamicList::deleteIndex(const string _indexCondition) {
         map<shared_ptr<DataElement>, MultiDataStructure*>::iterator link = 
             this->linkMap.find(*idxIter);
         
-        link->second->unlinkParentElement();
+        if( link->second != nullptr ) {
+            link->second->unlinkParentElement();
+            link->second = nullptr;
+        }
         this->linkMap.erase(link);
 
         idxIter = this->valueList.erase(idxIter);
