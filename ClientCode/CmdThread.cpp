@@ -74,6 +74,7 @@ void CmdThread(int cmdNum,
                             case SIGNALTYPE_RECVSTART: //수신 시작
                                 delete signalPacket;
                             break;
+                            case SIGNALTYPE_ERROR:
                             case SIGNALTYPE_RECVEND: //수신 종료
                                 delete signalPacket;
                                 //데이터 출력
@@ -83,15 +84,6 @@ void CmdThread(int cmdNum,
                                     cout << printVector[i] << endl;
                                 }
                                 printMutex.unlock();
-                                removeSerialNum(*cmdSerialList, cmdNum);
-                                return;
-                            break;
-
-                            case SIGNALTYPE_ERROR: //시스템 에러
-                                //패킷이 옳지 않은 방향으로 접근할 경우
-                                //TODO이 에러가 발생할 경우 디버깅 필수
-                                cerr << "Server Error : Your Command is extinguish becuase It accesses invaild way" << endl;
-                                delete signalPacket;
                                 removeSerialNum(*cmdSerialList, cmdNum);
                                 return;
                             break;

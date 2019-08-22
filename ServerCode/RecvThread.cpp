@@ -128,6 +128,7 @@ void RecvThread(Socket* socket,
             break;
             case TASKMILESTONE_SETUSERS: //유저 세팅
             {
+                bool missionSuccess = false; //명령수행 성공 여부
 
                 //수신을 시작하는 패킷 삽입
                 sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
@@ -140,27 +141,32 @@ void RecvThread(Socket* socket,
                 if(recvPacket->getCmdArray()[0].compare(User_Setting::userAdd) == 0) {
                     
                     //useradd [new user] [new password] [set level]
+                    
 
                     //인자값 확인
                     if(recvPacket->getCmdArray().size() != 4) {
                         msg = "setpswd [new user] [new pswd] [set level]";
                         logMsg = "useradd failed";
+                        missionSuccess = false;
                     }
                     //아이디, 패스워드 범위값 확인
                     else if(!( recvPacket->getCmdArray()[1].length() >= MIN_ID_LENGTH && 
                                 recvPacket->getCmdArray()[1].length() <= MAX_ID_LENGTH)) {
                         msg = "ID size must between 4 and 16";
                         logMsg = "useradd failed";
+                        missionSuccess = false;
                     } else if(!( recvPacket->getCmdArray()[2].length() >= MIN_PSWD_LENGTH && 
                                 recvPacket->getCmdArray()[2].length() <= MAX_PSWD_LENGTH)) {
                         msg = "Password size must between 8 and 16";
                         logMsg = "useradd failed";
+                        missionSuccess = false;
                     
                     //아이디 문자 유효성 확인
                     } else if(!tok::IsAllowedCharacter(recvPacket->getCmdArray()[1], R"(~!@#$%^&*()_+-=[];'./,>{}:"<?")")) {
                         msg = R"(~!@#$%^&*()_+-=[];'./,>{}:"<?")"; 
                         msg += "is not allowd in username";
                         logMsg = "useradd failed";
+                        missionSuccess = false;
                     } else {
                     //유저 레벨 유효성 확인
                         UserLevel newUserLevel;
@@ -170,6 +176,7 @@ void RecvThread(Socket* socket,
                         } catch(DataConvertException& e) {
                             msg = e.getErrorMsg();
                             logMsg = "tuseradd failed";
+                            missionSuccess = false;
                         }
 
                         //exception으로 인한 msg에 데이터 삽입 발생
@@ -195,10 +202,12 @@ void RecvThread(Socket* socket,
                                 msg = "complete to add user.";
                                 accountLoader->updateFile();
                                 writeUserInfoMutex.unlock();
+                                missionSuccess = true;
                             } else {
                                 writeUserInfoMutex.unlock();
                                 logMsg = "useradd failed";
                                 msg = "This user is aleady exist";
+                                missionSuccess = false;
                             }
 
                         }
@@ -206,23 +215,26 @@ void RecvThread(Socket* socket,
 
                 } else if(recvPacket->getCmdArray()[0].compare(User_Setting::userDel) == 0) {
                     //userdel [user]
-
+                    
                     //인자값 확인
                     if(recvPacket->getCmdArray().size() != 2) {
                         msg = "userdel [user]";
                         logMsg = "userdel failed";
+                        missionSuccess = false;
                     }
 
                     //자기 자신은 삭제 못함
                     else if( recvPacket->getCmdArray()[1].compare(user->getID()) == 0) {
                         msg = "자신감을 잃지 말아요 ㅠㅠ";
                         logMsg = "userdel failed";
+                        missionSuccess = false;
 
                     //삭제대상의 유저가 로그인되어있는 경우
                     } else if(loginedUserList->searchLoginedUser(recvPacket->getCmdArray()[1])) {
 
                         msg = "Target User is logined.";
                         logMsg = "userdel failed";
+                        missionSuccess = false;
 
                     }  else {
                         
@@ -234,6 +246,7 @@ void RecvThread(Socket* socket,
                             writeUserInfoMutex.unlock();
                             msg = "this user does not exist";
                             logMsg = "userdel Failed";
+                            missionSuccess = false;
 
                         } else {
                             
@@ -243,6 +256,7 @@ void RecvThread(Socket* socket,
 
                             msg = "userdel complete";
                             logMsg = "userdel Complete";
+                            missionSuccess = true;
                             
                         }
                     
@@ -260,12 +274,21 @@ void RecvThread(Socket* socket,
                 ));
 
                 //마지막을 알리는 패킷 전송
-                sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
+                if(missionSuccess) {
+                    sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
                                         socket->getIP(),
                                         recvPacket->getCmdNum(),
                                         socket->getDiscripter(),
                                         SIGNALTYPE_RECVEND   
-                ));
+                    ));
+                } else {
+                    sendPacketQueue.lock()->push( new SignalPacket(user->getID(),
+                                        socket->getIP(),
+                                        recvPacket->getCmdNum(),
+                                        socket->getDiscripter(),
+                                        SIGNALTYPE_ERROR   
+                    ));
+                }
 
                 //로그 기록
                 logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, logMsg );
@@ -330,7 +353,7 @@ void RecvThread(Socket* socket,
                                         socket->getIP(),
                                         recvPacket->getCmdNum(),
                                         socket->getDiscripter(),
-                                        SIGNALTYPE_RECVEND   
+                                        SIGNALTYPE_ERROR   
                 ));
             }
             delete recvPacket;

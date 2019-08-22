@@ -39,6 +39,8 @@ namespace SKVS_DataBase {
 
         //Data Functions
         void create(SendCmdPacket& _requestPacket);
+        void drop(SendCmdPacket& _requestPacket);
+        void insert(SendCmdPacket& _requestPacket);
 
     public:
         explicit DataBase(shared_ptr<AdapterThreadUtility>& adapter) {

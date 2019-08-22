@@ -108,7 +108,7 @@ void SKVS_DataBase::DataBase::exceptError(SendCmdPacket& _requestPacket, string 
             _requestPacket.getIP(),
             _requestPacket.getCmdNum(),
             _requestPacket.getSock(),
-            SIGNALTYPE_RECVEND
+            SIGNALTYPE_ERROR
         )
     );       
     return;
@@ -123,10 +123,7 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
 
     //시작을 알리는 패킷 전송
     SignalPacket* sigPacket = new SignalPacket(
-        _requestPacket.getUserName(),
-        _requestPacket.getIP(),
-        _requestPacket.getCmdNum(),
-        _requestPacket.getSock(),
+        _requestPacket,
         SIGNALTYPE_RECVSTART
     );
     this->queueAdapter.lock()->pushInOutputQueue(sigPacket);
@@ -150,6 +147,7 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
         cmdVec[1].compare(printedDynamicHashMap) == 0|| 
         cmdVec[1].compare(printedStaticHashMap) == 0 )
     ) {
+        errorMsg = cmdVec[1] + "is not container";
         exceptError(_requestPacket, errorMsg); 
         return;
     }
@@ -207,46 +205,33 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                     string result = "Basic : " + cmdVec[2] + " -> " + cmdVec[4];
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new RecvMsgPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             result
                         )
                     );
 
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new RecvMsgPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             "Create Complete"
                         )
                     );
 
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new SignalPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             SIGNALTYPE_RECVEND
                         )
                     );
 
                     //로그데이터 생성
                     logMsg = "create key : " + cmdVec[2] + " by Basic";
-                    this->queueAdapter.lock()->pushInOutputQueue(
-                        new LogPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                    LogPacket* logPacket = new LogPacket(
+                            _requestPacket,
                             logMsg
-                        )
                     );
-
+                    this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+                    cout << logPacket->getStatement() << endl;
 
                     return;
 
@@ -278,10 +263,7 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                         string result =  "OneSet : " + cmdVec[2] + " | " + "DataType : " + cmdVec[3];
                         this->queueAdapter.lock()->pushInOutputQueue(
                             new RecvMsgPacket(
-                                _requestPacket.getUserName(),
-                                _requestPacket.getIP(),
-                                _requestPacket.getCmdNum(),
-                                _requestPacket.getSock(),
+                                _requestPacket,
                                 result
                             )
                         );
@@ -294,10 +276,7 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                         string result =  "MultiSet : " + cmdVec[2] + " | " + "DataType : " + cmdVec[3];
                         this->queueAdapter.lock()->pushInOutputQueue(
                             new RecvMsgPacket(
-                                _requestPacket.getUserName(),
-                                _requestPacket.getIP(),
-                                _requestPacket.getCmdNum(),
-                                _requestPacket.getSock(),
+                                _requestPacket,
                                 result
                             )
                         );
@@ -308,32 +287,24 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                     //INPUT COMPLETE
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new RecvMsgPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             "Create complete"
                         )
                     );
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new SignalPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             SIGNALTYPE_RECVEND
                         )
                     );
-                    this->queueAdapter.lock()->pushInOutputQueue(
-                        new LogPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
-                            logMsg
-                        )
-                    );
 
+                    //로그 작성
+                    LogPacket* logPacket = new LogPacket(
+                            _requestPacket,
+                            logMsg
+                    );
+                    this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+                    cout << logPacket->getStatement() << endl;
                     return;
 
                 } catch(DataException& e) {
@@ -361,41 +332,29 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                     logMsg =  "Create Key " + cmdVec[2] + " by StaticList";
                     this->queueAdapter.lock()->pushInOutputQueue(
                             new RecvMsgPacket(
-                                _requestPacket.getUserName(),
-                                _requestPacket.getIP(),
-                                _requestPacket.getCmdNum(),
-                                _requestPacket.getSock(),
+                                _requestPacket,
                                 result
                             )
                         );
                     this->queueAdapter.lock()->pushInOutputQueue(
                             new RecvMsgPacket(
-                                _requestPacket.getUserName(),
-                                _requestPacket.getIP(),
-                                _requestPacket.getCmdNum(),
-                                _requestPacket.getSock(),
+                                _requestPacket,
                                 "Create complete"
                             )
                         );
                         
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new SignalPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             SIGNALTYPE_RECVEND
                         )
                     );
-                    this->queueAdapter.lock()->pushInOutputQueue(
-                        new LogPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
-                            logMsg
-                        )
+                    LogPacket* logPacket = new LogPacket(
+                        _requestPacket,
+                        logMsg
                     );
+                    this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+                    cout << logPacket->getStatement() << endl;
 
                     return;
                 } catch (DataException& e) {
@@ -420,40 +379,29 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                 logMsg = "Create Key " + cmdVec[2] + " by StaticList";
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(
-                        _requestPacket.getUserName(),
-                        _requestPacket.getIP(),
-                        _requestPacket.getCmdNum(),
-                        _requestPacket.getSock(),
+                        _requestPacket,
                         result
                     )
                 );
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(
-                        _requestPacket.getUserName(),
-                        _requestPacket.getIP(),
-                        _requestPacket.getCmdNum(),
-                        _requestPacket.getSock(),
+                        _requestPacket,
                         "Create Complete"
                     )
                 );
                 this->queueAdapter.lock()->pushInOutputQueue(
                         new SignalPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             SIGNALTYPE_RECVEND
                     )
                 );
-                this->queueAdapter.lock()->pushInOutputQueue(
-                    new LogPacket(
-                        _requestPacket.getUserName(),
-                        _requestPacket.getIP(),
-                        _requestPacket.getCmdNum(),
-                        _requestPacket.getSock(),
+                LogPacket* logPacket = new LogPacket(
+                        _requestPacket,
                         logMsg
-                    )
-                );
+                    );
+                this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+                cout << logPacket->getStatement() << endl;
+                return;
                 
             }
         }
@@ -474,40 +422,28 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
                     logMsg = "Create Key " + cmdVec[2] + " by StaticHashMap";
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new RecvMsgPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             result
                         )
                     );
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new RecvMsgPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             "Create complete"
                         )
                     );
                     this->queueAdapter.lock()->pushInOutputQueue(
                         new SignalPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
+                            _requestPacket,
                             SIGNALTYPE_RECVEND
                         )
                     );
-                    this->queueAdapter.lock()->pushInOutputQueue(
-                        new LogPacket(
-                            _requestPacket.getUserName(),
-                            _requestPacket.getIP(),
-                            _requestPacket.getCmdNum(),
-                            _requestPacket.getSock(),
-                            logMsg
-                        )
+                    LogPacket* logPacket = new LogPacket(
+                        _requestPacket,
+                        logMsg
                     );
+                    this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+                    cout << logPacket->getStatement() << endl;
                     return;
                 } catch (DataException& e) {
                     errorMsg = e.getErrorMsg();
@@ -522,41 +458,94 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
         {
             //create dynamichashmap [key]
             if(cmdVec.size() != 3) {
-                cout << "create dynamichashmap [key]" << endl;
+                errorMsg =  "create dynamichashmap [key]";
+                exceptError(_requestPacket, errorMsg);
                 return;
             } else {
                 dataBase.push_back(new DynamicHashMap(cmdVec[2]));
-                cout << "Dynamic HashMap : " << cmdVec[2] << endl;
-                cout << "Create compelete" << endl;
+                string result = "Dynamic HashMap : " + cmdVec[2];
+                logMsg = "Create Key " + cmdVec[2] + " by StaticHashMap";
+
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(
+                        _requestPacket,
+                        result
+                    )
+                );
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(
+                        _requestPacket,
+                        "Create compelete"
+                    )
+                );
+                this->queueAdapter.lock()->pushInOutputQueue(
+                        new SignalPacket(
+                            _requestPacket,
+                            SIGNALTYPE_RECVEND
+                    )
+                );
+                LogPacket* logPacket = new LogPacket(
+                        _requestPacket,
+                        logMsg
+                    );
+                this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+                cout << logPacket->getStatement() << endl;                 
                 return;
             }
         }
         break;
 
-        default:
-            cout << "System Error : Element is try to inserting!" << endl;
+        default: //나와서는 안되는 케이스
+            errorMsg = "System Error : Element is try to inserting!";
+            this->queueAdapter.lock()->pushInOutputQueue(
+                new RecvMsgPacket(
+                    _requestPacket,
+                    errorMsg
+                )
+            );
+            this->queueAdapter.lock()->pushInOutputQueue(
+                new SignalPacket(
+                    _requestPacket,
+                    SIGNALTYPE_ERROR
+                )
+            );
+            //로그 작성
+            LogPacket* logPacket = new LogPacket(
+                        _requestPacket,
+                        logMsg
+                    );
+            this->queueAdapter.lock()->pushInOutputQueue(logPacket);
+            cout << logPacket->getStatement() << endl;  
+            
             return;
     }
 
     return;
 
 }
+void SKVS_DataBase::DataBase::drop(SendCmdPacket& _requestPacket) {
+    vector<string> cmdVec = _requestPacket.getCmdArray();
+}
 
+void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
+    vector<string> cmdVec = _requestPacket.getCmdArray();
+
+
+
+}
 
 void SKVS_DataBase::DataBase::runCmd(SendCmdPacket& _requestPacket) {
 
     if( _requestPacket.getCmdArray()[0].compare(DB_Command::Create) == 0)
         create(_requestPacket);
+    else if( _requestPacket.getCmdArray()[0].compare(DB_Command::Create) == 0)
     else { //명령어를 잘못 입력되는 경우인데
         //이부분은 이초에 CommandFilter에서 걸러지는 부분이므로
         //이 구간에 들어올 경우 System Error 발생
         string errorMsg = "System Error : invaild Command try to access database system";
         //로그데이터 등록
         LogPacket* logPacket = new LogPacket(
-            _requestPacket.getUserName(),
-            _requestPacket.getIP(),
-            _requestPacket.getCmdNum(),
-            _requestPacket.getSock(),
+            _requestPacket,
             errorMsg
         );
 
@@ -566,10 +555,7 @@ void SKVS_DataBase::DataBase::runCmd(SendCmdPacket& _requestPacket) {
         //클라이언트의 해당 커멘드 스레드에 대한 종료 시그널 보내기
 
         SignalPacket* terminatePacket = new SignalPacket(
-            _requestPacket.getUserName(),
-            _requestPacket.getIP(),
-            _requestPacket.getCmdNum(),
-            _requestPacket.getSock(),
+            _requestPacket,
             SIGNALTYPE_ERROR
         );
         this->queueAdapter.lock()->pushInOutputQueue(terminatePacket);
