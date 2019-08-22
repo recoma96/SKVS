@@ -69,7 +69,6 @@ void SendThread(Socket* socket,
                 {
                     sendBuf = makePacketToCharArray<SignalPacket>( *((SignalPacket*)(sendPacket)) );
                     bufSize = strlen(sendBuf);
-
                     if( ((SignalPacket*)(sendPacket))->getSignal() == SIGNALTYPE_SHUTDOWN ) {
                         
                         disconnectedBuf = true;

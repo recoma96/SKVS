@@ -65,7 +65,6 @@ void CmdThread(int cmdNum,
                     case PACKETTYPE_SIGNAL:
                     {
                         SignalPacket* signalPacket = (SignalPacket*)recvPacket;
-
                         switch( signalPacket->getSignal()) {
 
                             case SIGNALTYPE_SHUTDOWN: //종료
@@ -77,7 +76,6 @@ void CmdThread(int cmdNum,
                             break;
                             case SIGNALTYPE_RECVEND: //수신 종료
                                 delete signalPacket;
-                                
                                 //데이터 출력
                                 printMutex.lock();
                                 cout << endl;

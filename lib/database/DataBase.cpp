@@ -563,7 +563,6 @@ void SKVS_DataBase::DataBase::runCmd(SendCmdPacket& _requestPacket) {
         //로그데이터 출력
         this->queueAdapter.lock()->pushInOutputQueue(logPacket);
         cout << logPacket->getStatement() << endl;
-
         //클라이언트의 해당 커멘드 스레드에 대한 종료 시그널 보내기
 
         SignalPacket* terminatePacket = new SignalPacket(

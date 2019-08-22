@@ -56,7 +56,7 @@ void UserConnectThread(
 void StandaloneAdapterThreadToLog(shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue);
 
 //데이터베이스를 연결할 어댑터 스레드 (Standalone)
-void StandAloneAdapterThreadToDataBase(
+extern void StandAloneAdapterThreadToDataBase(
     shared_ptr<ThreadAdapter::AdapterThreadBridge> _adpaterBridgeQueue,
     map< int, weak_ptr<queue<Packet*, deque<Packet*>>> >* packetBridge
 );
@@ -153,7 +153,8 @@ int main(void) {
 		logAdapterThread = thread(StandaloneAdapterThreadToLog,
 									adapterBridgeQueue);
 		dataBaseAdapterThread = thread(
-			_adpaterBridgeQueue,
+			StandAloneAdapterThreadToDataBase,
+			adapterBridgeQueue,
 			&packetBridge
 		);
 
@@ -192,6 +193,7 @@ int main(void) {
 	adapterBridgeQueue->pushInQueue(logPacket, LogAdapterSerial_input);
 
 	logAdapterThread.join();
+	dataBaseAdapterThread.join();
 	closeSocket(&mainSocket);
 	
 

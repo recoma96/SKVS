@@ -124,7 +124,7 @@ void RecvThread(Socket* socket,
             
             case TASKMILESTONE_DATABASE:
                 //데이터베이스 입력 패킷 큐로 패킷을 이동
-                //adapterBridgeQueue.lock()->pushInQueue(recvPacket, DBAdapterSerial_input);
+                adapterBridgeQueue.lock()->pushInQueue(recvPacket, DBAdapterSerial_input);
             break;
             case TASKMILESTONE_SETUSERS: //유저 세팅
             {

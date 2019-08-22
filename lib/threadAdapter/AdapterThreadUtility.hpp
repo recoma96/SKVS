@@ -42,6 +42,7 @@ namespace ThreadAdapter {
             outputMutex.unlock();
         }
         inline Packet* popInOutputQueue(void) noexcept {
+            if( outputQueue.empty()) return nullptr;
 
             outputMutex.lock();
             Packet* returnPacket = outputQueue.front();
