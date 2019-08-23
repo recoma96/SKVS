@@ -6,7 +6,7 @@
             "userlevel": "root"
         },
         {
-            "id": "jeonghyun",
+            "id": "user",
             "pswd": "12345678",
             "userlevel": "client"
         }

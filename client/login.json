@@ -4,7 +4,7 @@
 		"port" : 8000
 	},
 	"user" : {
-		"id" : "jeonghyun",
+		"id" : "user",
 		"paswd" : "12345678"
 	}
 }
