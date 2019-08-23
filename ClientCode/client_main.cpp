@@ -21,7 +21,9 @@ extern void IOThread(User* userInfo, Socket* socket);
 bool isShutdown = false; //shotdown flag
 int main(void) {
 
-	cout << "================== SKVS[CLIENT] 0.1.0 Alpha ==================" << endl;
+	cout << "SKVS[CLIENT] 0.1.0 (Relesae August 23 2019 )" << endl;
+	cout << "Alpha Test Version 1" << endl;
+	cout << "Writen by SweetCase Project" << endl;
 	cout << endl;
 
 	//1.login.json에서 로그인 정보 파싱
