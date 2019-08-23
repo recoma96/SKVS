@@ -1,0 +1,9 @@
+language: cpp
+os: linux
+
+branches:
+  only:
+    - master
+
+compiler: gcc
+script: "make all"
