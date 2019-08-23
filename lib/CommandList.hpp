@@ -23,6 +23,7 @@ namespace CommandList {
         const string Link="link";
         const string UnLink="unlink";
         const string Delete="delete";
+        const string Sort="sort";
 
         const string GetSize="getsize";
         const string GetKey="getkey";

@@ -17,6 +17,7 @@ CommandFilter::CommandFilter(UserList* _userList) {
 	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::GetSize, TASKMILESTONE_DATABASE));
 	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::GetKey, TASKMILESTONE_DATABASE));
 	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::List, TASKMILESTONE_DATABASE));
+	dbCommand.insert(pair<string,TaskMileStone>(DB_Command::Sort, TASKMILESTONE_DATABASE));
 
 
 	//공용 명령어 삽입

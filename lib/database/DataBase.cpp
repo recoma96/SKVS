@@ -155,8 +155,8 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
     }
 
     //키 유효성 판단
-    if(!tok::IsAllowedCharacter(cmdVec[2], R"(~!@#$%^&*()_+-=[];'./,>{}:"<?")")) {
-        errorMsg = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'./,>{}:"<?)";
+    if(!tok::IsAllowedCharacter(cmdVec[2], ".")) {
+        errorMsg = "key can't have point (.)";
         exceptError(_requestPacket, errorMsg); 
         return;
     }
@@ -549,6 +549,7 @@ void SKVS_DataBase::DataBase::drop(SendCmdPacket& _requestPacket) {
 
     string result; //결과메세지
     string logMsg; //로그메세지
+    string errorMsg;
 
     //recvstart
     this->queueAdapter.lock()->pushInOutputQueue(
@@ -565,8 +566,8 @@ void SKVS_DataBase::DataBase::drop(SendCmdPacket& _requestPacket) {
     //drop은 부모데이터가 없는 최상위 데이터만 삭제 가능합니다.
 
     //키 유효성 판단
-    if(!tok::IsAllowedCharacter(cmdVec[1], R"(~!@#$%^&*()_+-=[];'./,>{}:"<?")")) {
-        result =  R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'./,>{}:"<?)";
+    if(!tok::IsAllowedCharacter(cmdVec[1], ".")) {
+        errorMsg = "key can't have point (.)";
         exceptError(_requestPacket, result);
         return;
     }
@@ -692,6 +693,7 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
     vector<string> cmdVec = _requestPacket.getCmdArray();
     string result;
     string logMsg;
+    string errorMsg;
 
     // Only HashMap -> insert [key] [new-key] [new-value]
     // Others -> insert [key] [value]
@@ -700,22 +702,6 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
     //인자값 측정
     if( cmdVec.size() != 3 && cmdVec.size() != 4 ) {
         result = "insert [key] [new-value]\ninsert [key] [new-key] [new-value] <- Only HashMap";
-        exceptError(_requestPacket, result);
-        return;
-    }
-
-    //키 유효성 판단
-    //검색 대상 키 유효성 판단
-    if(!tok::IsAllowedCharacter(cmdVec[1], R"(~!@#$%^&*()_+-=[];'/,>{}:"<?")")) {
-        result = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'/,>{}:"<?)";
-        exceptError(_requestPacket, result);
-        return;
-    }
-
-    //검색 대상 새로 입력할 데이터(또는 해시맵 키) 유효성 판단
-    //얘는 온점도 못붙임
-    if(!tok::IsAllowedCharacter(cmdVec[2], R"(~!@#$%^&*()_+-=[];'/,.>{}:"<?")")) {
-        result = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'/,>{}:."<?)";
         exceptError(_requestPacket, result);
         return;
     }
@@ -746,12 +732,6 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
                 return;
             }
 
-            if(!tok::IsAllowedCharacter(cmdVec[3], R"(~!@#$%^&*()_+-=[];'/,.>{}:"<?")")) {
-                result =  R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'/,>{}:."<?)";
-                exceptError(_requestPacket, result);
-                return;
-            }
-
             //데이터 입력
             if(foundData->getStructType() == STRUCTTYPE_STATICHASHMAP) {
 
@@ -767,6 +747,7 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
 
 
                 } else {
+                    
                     mutexMap.find(foundData)->second->unlock(); //뮤텍스 해제
                     result = "complete";
                     logMsg = "insert " + cmdVec[2] + " -> " + cmdVec[3] + " in " + cmdVec[1];
@@ -784,7 +765,17 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
 
                 }
                 return;
-            } else {
+            } else { //dynamic hashmap
+
+                //insert [key] [sub-key] [new-value]
+                //서브키 유효성 판단
+
+                if(!tok::IsAllowedCharacter(cmdVec[2], ".")) {
+                    errorMsg = "key can't have point (.)";
+                    exceptError(_requestPacket, result);
+                    return;
+                }
+
                 mutexMap.find(foundData)->second->lock(); //뮤텍스 설정
 
                 if(!((DynamicHashMap*)(foundData))->insertKeyValue(cmdVec[2], cmdVec[3])) {
@@ -940,6 +931,14 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
                  return;
             } else { //DynamicList
                 try {
+                    
+                    //키 유효성 판단
+                    if(!tok::IsAllowedCharacter(cmdVec[2], ".")) {
+                        errorMsg = "key can't have point (.)";
+                        exceptError(_requestPacket, result);
+                        return;
+                    }
+
                     mutexMap.find(foundData)->second->lock(); //뮤텍스 설정
 
                     if(!((DynamicList*)(foundData))->insertValue(cmdVec[2])) {
@@ -1022,15 +1021,6 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
             return;
         }
         //탐색 알고리즘 <맨 위 참조>
-
-        //검색 대상 키 유효성 판단
-        if(!tok::IsAllowedCharacter(cmdVec[2], R"(~!@#$%^&*()_+=[-];'/,>{}:"<?")")) {
-
-            result = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'/,>{}:"<?)";
-            exceptError(_requestPacket, result);
-
-            return;
-        }
 
         //.으로 되어있는 경우, .트로 토큰화를 나누고
         // .갯수에 따라 하위 데이터로 이동
@@ -1160,15 +1150,6 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
 
     } else { //Condition 범위 검색
         // get [key] [condition]
-        
-        //검색 대상 키 유효성 판단
-        if(!tok::IsAllowedCharacter(cmdVec[1], R"(~!@#$%^&*()_+=[-];'/,>{}:"<?")")) {
-
-            result = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'/,>{}:"<?)";
-            exceptError(_requestPacket, result);
-
-            return;
-        }
 
         //키 검색
         foundData = findDataByRoot(cmdVec[1], result);
@@ -1436,21 +1417,6 @@ void SKVS_DataBase::DataBase::set(SendCmdPacket& _requestPacket) {
             return;
         }
         
-        //키 판정
-        if(!tok::IsAllowedCharacter(cmdVec[2], R"(~!@#$%^&.*()_+-=[];'/,>{}:"<?)")) {
-            result = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];'/,>{}:"<?)";
-            exceptError(_requestPacket, result);
-            return;
-        }
-
-        //값 판정
-        if(!tok::IsAllowedCharacter(cmdVec[4], R"(~!@#$%^&.*()_+-.=[];'/,>{}:"<?)")) {
-            result =  R"(Invalid Key-name list = ~!@#$%^&*()_+-=[.];'/,>{}:"<?)";
-            exceptError(_requestPacket, result);
-            return;
-        }
-
-    
         //검색
         foundData = findDataByRoot(cmdVec[2], result);
         if( foundData == nullptr) {
@@ -1540,18 +1506,6 @@ void SKVS_DataBase::DataBase::set(SendCmdPacket& _requestPacket) {
         //set [key] [value(or key in hashmap)] [new value]
         if(cmdVec.size() != 4) {
             result =  "set [key] [value(or key in hashmap)] [new value]";
-            exceptError(_requestPacket, result);
-            return;
-        }
-
-        //값에 대한 유효성 판정
-        if(!tok::IsAllowedCharacter(cmdVec[2], R"(~!@#$%^&.*()_+-=[];'/,>{}:"<?)")) {
-            result =  R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];.'/,>{}:"<?)";
-            exceptError(_requestPacket, result);
-            return;
-        }
-        if(!tok::IsAllowedCharacter(cmdVec[3], R"(~!@#$%^&.*()_+-=[];'/,>{}:"<?)")) {
-            result = R"(Invalid Key-name list = ~!@#$%^&*()_+-=[];.'/,>{}:"<?)";
             exceptError(_requestPacket, result);
             return;
         }
@@ -2320,8 +2274,9 @@ void SKVS_DataBase::DataBase::getkey(SendCmdPacket& _requestPacket) {
     if(foundData->getStructType() == STRUCTTYPE_STATICHASHMAP ||
         foundData->getStructType() == STRUCTTYPE_DYNAMICHASHMAP) {
         
-
+        mutexMap.find(foundData)->second->lock();
         vector<string> resultKey = ((HashMap*)(foundData))->getKey();
+        mutexMap.find(foundData)->second->unlock();
 
         result = "HashMap : '" + cmdVec[1] + "' key list\n-------------------------";
         this->queueAdapter.lock()->pushInOutputQueue(
@@ -2367,6 +2322,77 @@ void SKVS_DataBase::DataBase::_list(SendCmdPacket& _requestPacket) {
     return;
 }
 
+void SKVS_DataBase::DataBase::_sort(SendCmdPacket& _requestPacket) {
+
+    //sort [key]
+    this->queueAdapter.lock()->pushInOutputQueue(
+        new SignalPacket(_requestPacket, SIGNALTYPE_RECVSTART )
+    );
+
+    string result;
+    string logMsg;
+
+    vector<string> cmdVec = _requestPacket.getCmdArray();
+
+    if(cmdVec.size() != 3 ) {
+        result = "sort [key] [sort-flag]";
+        exceptError(_requestPacket, result);
+        return;
+    }
+
+    DataElement* foundData = findDataByRoot(cmdVec[1], result);
+    if(foundData == nullptr) {
+        exceptError(_requestPacket, result);
+        return;
+    }
+
+    //데이터타입 판정
+    if( foundData->getStructType() != STRUCTTYPE_STATICLIST && 
+        foundData->getStructType() != STRUCTTYPE_DYNAMICLIST ) {
+        
+        result = "This key is not List";
+        exceptError(_requestPacket, result);
+    }
+
+    //flag에 따른 sort 시작
+
+    if( cmdVec[2].compare("asen") == 0) {
+        //오름차순
+        mutexMap.find(foundData)->second->lock();
+        ((List*)(foundData))->sort(SORTFLAG_ASEN);
+        mutexMap.find(foundData)->second->unlock();
+
+        logMsg = "Key : " + cmdVec[1] + " is sorted by Ascending order";
+        result = "complete";        
+    } else if( cmdVec[2].compare("desn") == 0) {
+
+        mutexMap.find(foundData)->second->lock();
+        ((List*)(foundData))->sort(SORTFLAG_DESN);
+        mutexMap.find(foundData)->second->unlock();
+
+        logMsg = "Key : " + cmdVec[1] + " is sorted by Descending order";
+        result = "complete"; 
+    } else {
+        //오타
+        result = "asen : Ascending order, desn : Descending order";
+        exceptError(_requestPacket, result);
+        return;
+    }
+
+    //결과데이터 송출
+    this->queueAdapter.lock()->pushInOutputQueue(
+        new RecvMsgPacket(_requestPacket, result)
+    );
+    this->queueAdapter.lock()->pushInOutputQueue(
+        new SignalPacket(_requestPacket, SIGNALTYPE_RECVEND)
+    );
+    this->queueAdapter.lock()->pushInOutputQueue(
+        new LogPacket(_requestPacket, logMsg)
+    );
+    
+
+}
+
 void SKVS_DataBase::DataBase::runCmd(SendCmdPacket& _requestPacket) {
 
     if( _requestPacket.getCmdArray()[0].compare(DB_Command::Create) == 0)
@@ -2391,6 +2417,8 @@ void SKVS_DataBase::DataBase::runCmd(SendCmdPacket& _requestPacket) {
         getkey(_requestPacket);
     else if(_requestPacket.getCmdArray()[0].compare(DB_Command::List) == 0)
         _list(_requestPacket);
+    else if(_requestPacket.getCmdArray()[0].compare(DB_Command::Sort) == 0)
+        _sort(_requestPacket);
     else { //명령어를 잘못 입력되는 경우인데
         //이부분은 이초에 CommandFilter에서 걸러지는 부분이므로
         //이 구간에 들어올 경우 System Error 발생

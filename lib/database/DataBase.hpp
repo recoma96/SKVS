@@ -49,6 +49,7 @@ namespace SKVS_DataBase {
         void getsize(SendCmdPacket& _requestPacket);
         void getkey(SendCmdPacket& _requestPacket);
         void _list(SendCmdPacket& _requestPacket);
+        void _sort(SendCmdPacket& _requestPacket);
 
     public:
         explicit DataBase(shared_ptr<AdapterThreadUtility>& adapter) {

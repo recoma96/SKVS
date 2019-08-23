@@ -78,7 +78,7 @@ number_t structure::DataElement::getData<number_t>(void) const noexcept {
 }
 template <>
 float_t structure::DataElement::getData<float_t>(void) const noexcept {
-	if( this->dataType == DATATYPE_NUMBER) return (float_t)(atoi(this->data.c_str()));
+	if( this->dataType == DATATYPE_FLOAT) return (float_t)(atof(this->data.c_str()));
 	else return 0;
 }
 

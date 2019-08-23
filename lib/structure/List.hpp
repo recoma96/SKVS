@@ -99,7 +99,7 @@ namespace structure {
                         case DATATYPE_NUMBER:
                             valueList.sort(SortNumberListForward());
                         break;
-                        case DATATYPE_FLOAT:
+                        default:
                             valueList.sort(SortFloatListForward());
                         break;
                     }
@@ -111,7 +111,7 @@ namespace structure {
                         case DATATYPE_NUMBER:
                             valueList.sort(SortNumberListBackward());
                         break;
-                        case DATATYPE_FLOAT:
+                        default:
                             valueList.sort(SortFloatListBackward());
                         break;
                     }
