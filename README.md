@@ -32,6 +32,33 @@
 ### Server
 * server 디렉토리로 들어가면 account.json과 system_config.json을 이용해서 계정정보나, 시스템 설정을 변경할 수 있습니다.
 * 마찬가지로 json 구조가 회손되면 프로그램이 정상적으로 작동하지 않습니다.
+* account.json
+<pre><code>{
+    "account": [
+        {
+            "id": "root",
+            "pswd": "123456780",
+            "userlevel": "root"
+        },
+        {
+            "id": "user",
+            "pswd": "12345678",
+            "userlevel": "client"
+        }
+    ]
+}
+</code></pre>
+* system_config.json
+	* Style은 독립형("STANDALONE")과 분산형("DISTRIBUTED")으로 나뉘며 이 버전에는 독립형만 구현되어 있습니다. 분산형은 차후에 구현할 예정입니다.
+<pre><code>{
+    "port": 8000,
+    "style": "STANDALONE",
+    "log": {
+        "location": "log/"
+    }
+}
+</code></pre>
+
 
 ## Data Structure
 * 모든 데이터의 최소 단위이며 멤버 변수는 다음과 같습니다.
@@ -98,8 +125,13 @@ d_size_t size;
   * sort
     * 오름차순 : asen
     * 내림차순 : desn
-    
 
+## Account Command
+|명령어|설명|
+|--|---|
+|useradd [new user] [new password] [set level] | 유저를 생성합니다. __ROOT__ 유저만 사용 가능하며, __client__ 와 __root__ 로 레벨설정을 합니다.|
+|userdel [user]| 유저를 삭제합니댜.  __ROOT__ 만 사용할 수 있습니다.|
+## Data Command
 |명령어|설명|
 |--|---|
 |create [struct-type] [key] {data-type}|데이터 구조체를 생성합니다. data-type은 Set이나 Statc계열에서 데이터타입을 설정할때 사용합니다.|
