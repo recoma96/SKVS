@@ -9,21 +9,19 @@ branches:
   only:
     - master
 
-
 install:
   #protoc
-  - set -ex
-  - wget https://protobuf.googlecode.com/files/protobuf-3.0.0.tar.gz
-  - tar -xzvf protobuf-3.0.0.tar.gz
-  - cd protobuf-3.0.0 && ./configure --prefix=/usr && make && sudo make install
   - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
   - unzip /tmp/protoc.zip -d "$HOME"/protoc
+  - sudo apt-get install libprotobuf-dev protobuf-compiler
+  - sudo apt-get install libprotoc-dev
   - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
   
 env:
-  - PATH=$HOME/protoc/bin:$HOME/protoc/include:$PATH
+  - PATH=$HOME/protoc/bin:$HOME/include:$PATH
 notification:
     email: false
 
 script: 
+  - whereis protobuf
   - make all
