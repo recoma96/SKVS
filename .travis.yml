@@ -20,7 +20,7 @@ env:
 
 script: 
   - protoc --version
-  - make all
+  - make HAS_SYSTEM_PROTOBUF=false
 
 #before_install:
 #    - eval "${MATRIX_EVAL}"
