@@ -22,7 +22,7 @@ env:
 script: 
   - source /etc/profile
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib
-  - make PROTOBUF_CONFIG_OPTS='--with-protoc=/usr/local/bin/protoc'
+  - make PROTOBUF_CONFIG_OPTS='--with-protoc=/usr/local/bin/protoc' -j 16
 
 #before_install:
 #    - eval "${MATRIX_EVAL}"
