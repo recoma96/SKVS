@@ -3,6 +3,10 @@ dist: trusty
 language: cpp
 compiler: gcc
 os: linux
+addons:
+  apt:
+    sources: ubuntu-toochain -r test
+    packages: g++-7
 
 branches:
   only:
@@ -18,10 +22,11 @@ install:
   
 env:
   - PATH=$HOME/protoc/bin:$PATH
+  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
 script: 
   - source /etc/profile
   - make all
 
-#before_install:
-#    - eval "${MATRIX_EVAL}"
+before_install:
+    - eval "${MATRIX_EVAL}"
