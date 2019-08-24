@@ -23,5 +23,5 @@ notification:
     email: false
 
 script: 
-  - whereis protobuf
+  - whereis protoc
   - make all
