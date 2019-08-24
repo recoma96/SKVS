@@ -27,3 +27,6 @@ env:
   - PATH=$HOME/protoc/bin:$PATH
 compiler: gcc
 script: "make all"
+
+before_install:
+    - eval "${MATRIX_EVAL}"
