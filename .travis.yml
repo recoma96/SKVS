@@ -19,6 +19,7 @@ install:
   
 env:
   - PATH=$HOME/protoc/bin:$PATH
+  - PATH=$HOME/protoc/include:$PATH
 notification:
     email: false
 
