@@ -20,10 +20,9 @@ env:
   - PATH=$HOME/protoc/bin:$PATH
 
 script: 
-  - whrereis protoc
   - source /etc/profile
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib
-  - make PROTOBUF_CONFIG_OPTS='--with-protoc=$HOME/protoc' -j 16
+  - make PROTOBUF_CONFIG_OPTS='--with-protoc=/home/travis/protoc' -j 16
 
 #before_install:
 #    - eval "${MATRIX_EVAL}"
