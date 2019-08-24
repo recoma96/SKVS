@@ -10,17 +10,17 @@ branches:
     - master
 install:
   #protoc
-  - curl -L https://github.com/google/protobuf/releases/download/v3.7.0/protoc-3.7.0-linux-x86_64.zip -o /tmp/protoc.zip
+  - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
   - unzip /tmp/protoc.zip -d "$HOME"/protoc
   - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
-  #- sudo apt-get install libprotobuf-dev protobuf-compiler
+  - sudo apt-get install libprotobuf-dev protobuf-compiler
   - sudo apt-get install libprotoc-dev
   
 env:
   - PATH=$HOME/protoc/bin:$PATH
 
 script: 
-  - protoc --version
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib
   - make PROTOBUF_CONFIG_OPTS='--with-protoc=/usr/local/bin/protoc'
 
 #before_install:
