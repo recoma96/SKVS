@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++ -g
-CXXFLAGS= -std=c++1y -lprotobuf -pthread
+CXXFLAGS= -std=c++1y -lprotobuf -pthread -I/home/travis/protobuf
 SERVER_TARGET=server/skvs-server
 CLIENT_TARGET=client/skvs-client
 
@@ -60,4 +60,4 @@ clean_all:
 
 #make protocol object file
 lib/packet/PacketSerial.pb.o: lib/packet/PacketSerial.pb.cc
-	g++ -g -c -std=c++1y -o lib/packet/PacketSerial.pb.o lib/packet/PacketSerial.pb.cc -lprotobuf -pthread
+	g++ -g -c -std=c++1y -o lib/packet/PacketSerial.pb.o lib/packet/PacketSerial.pb.cc -lprotobuf -pthread -I/home/travis/protobuf
