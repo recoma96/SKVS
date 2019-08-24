@@ -10,7 +10,7 @@ branches:
     - master
 
 before_install:
-  - ./install-protobuf.sh
+  - sudo ./install-protobuf.sh
 
 install:
   #protoc
