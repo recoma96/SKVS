@@ -18,10 +18,11 @@ install:
   - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
   
 env:
-  - PATH=$HOME/protoc/bin:$HOME/include:$PATH
+  - PATH=$HOME/protoc/bin:/usr/include:$PATH
 notification:
     email: false
 
 script: 
-  - whereis protoc
+  - ls /usr
+  - ls /usr/include
   - make all
