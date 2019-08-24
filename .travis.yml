@@ -33,7 +33,7 @@ env:
   #- PATH=$HOME/protoc/bin:$PATH
 
 script:
-  - sh setup_tests.sh ${OS_VERSION}
+  - gcc --version
   #- source /etc/profile
   #- make all
 
