@@ -63,7 +63,7 @@ namespace SKVS_DataBase {
         }
         //명령문 실행
         void runCmd(SendCmdPacket& _requestPacket);
-        weak_ptr<DataBase> getWeekPtr() { return weak_from_this(); }
+        //weak_ptr<DataBase> getWeekPtr() { return weak_from_this(); }
     };
 }
 
