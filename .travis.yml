@@ -3,10 +3,7 @@ dist: trusty
 language: cpp
 compiler: gcc
 os: linux
-addons:
-  apt:
-    sources: ubuntu-toochain -r test
-    packages: g++-7
+
 
 branches:
   only:
@@ -14,19 +11,18 @@ branches:
 
 install:
   #protoc
-  - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
+  - curl -L https://github.com/google/protobuf/releases/download/v3.6.0/protoc-3.6.0-linux-x86_64.zip -o /tmp/protoc.zip
   - unzip /tmp/protoc.zip -d "$HOME"/protoc
   - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
-  - sudo apt-get install libprotobuf-dev protobuf-compiler
-  - sudo apt-get install libprotoc-dev
+  #- sudo apt-get install libprotobuf-dev protobuf-compiler
+  #- sudo apt-get install libprotoc-dev
   
 env:
   - PATH=$HOME/protoc/bin:$PATH
-  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
 script: 
   - source /etc/profile
   - make all
 
-before_install:
-    - eval "${MATRIX_EVAL}"
+#before_install:
+#    - eval "${MATRIX_EVAL}"
