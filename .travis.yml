@@ -1,17 +1,20 @@
 language: cpp
+matrix:
+  include:
+    - os: linux
+      addons:
+        apt:
+          soures:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+
 os: linux
 
 branches:
   only:
     - master
-packages:
-  - gcc-7
-  - g++-7
 install:
-  #gcc 7
-  - sudo add-apt-repository -y ppa:jonathonf/gcc-7.1
-  - sudo apt-get update
-  - sudo apt-get install gcc-7 g++-7
   #protoc
   - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
   - unzip /tmp/protoc.zip -d "$HOME"/protoc
@@ -20,6 +23,7 @@ install:
   - gcc --version
 
 env:
+  - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
   - PATH=$HOME/protoc/bin:$PATH
 compiler: gcc
 script: "make all"
