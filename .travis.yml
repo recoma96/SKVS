@@ -20,7 +20,7 @@ env:
 
 script: 
   - protoc --version
-  - make HAS_SYSTEM_PROTOBUF=false
+  - make PROTOBUF_CONFIG_OPTS='--with-protoc=/usr/local/bin/protoc'
 
 #before_install:
 #    - eval "${MATRIX_EVAL}"
