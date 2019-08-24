@@ -19,6 +19,7 @@ env:
   - PATH=$HOME/protoc/bin:$PATH
 
 script: 
+  - protoc --version
   - make all
 
 #before_install:
