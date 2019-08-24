@@ -8,9 +8,9 @@ matrix:
             - ubuntu-toolchain-r-test
           packages:
             - g++-7
+            - gcc-7
 
-os: linux
-
+compiler: gcc
 branches:
   only:
     - master
@@ -20,13 +20,16 @@ install:
   - unzip /tmp/protoc.zip -d "$HOME"/protoc
   - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
   - sudo apt-get install libprotobuf-dev protobuf-compiler
-  - gcc --version
+  
 
 env:
   - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
   - PATH=$HOME/protoc/bin:$PATH
-compiler: gcc
-script: "make all"
+
+script: 
+  - export CC=gcc-7
+  - export CXX=g++-7
+  - make all
 
 before_install:
     - eval "${MATRIX_EVAL}"
