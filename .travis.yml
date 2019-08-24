@@ -12,16 +12,12 @@ before_install:
     - export PATH=$HOME/.local/bin:$HOME/protobuf/bin:$PATH
 
 install:
-    - mkdir -p $HOME/protobuf && pushd $HOME/protobuf
-      && curl -LO 'https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip'
-      && unzip protoc-3.9.0-linux-x86_64.zip
-      && popd
   #protoc
-  #- curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
-  #- unzip /tmp/protoc.zip -d "$HOME"/protoc
-  #- mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
-  #- sudo apt-get install libprotobuf-dev protobuf-compiler
-  #- sudo apt-get install libprotoc-dev
+  - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
+  - unzip /tmp/protoc.zip -d "$HOME"/protoc
+  - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
+  - sudo apt-get install libprotobuf-dev protobuf-compiler
+  - sudo apt-get install libprotoc-dev
   
 env:
   - PATH=$HOME/protoc/bin:$PATH
@@ -29,7 +25,7 @@ env:
 script: 
   - pushd generator/proto 
   - source /etc/profile
-  - make all && popd
+  - make all
 
 #before_install:
 #    - eval "${MATRIX_EVAL}"
