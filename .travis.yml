@@ -9,6 +9,9 @@ branches:
   only:
     - master
 
+before_install:
+  - ./install-protobuf.sh
+
 install:
   #protoc
   - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
