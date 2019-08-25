@@ -1,0 +1,10 @@
+[2019/7/25 20:8:33:812] [IP : Server] System Setting Complelete
+[2019/7/25 20:8:38:292] [IP : 127.0.0.1] This User is Logined. User : user
+[2019/7/25 20:8:47:154] [IP : 127.0.0.1] Create Key mylist by DynamicList
+[2019/7/25 20:8:52:777] [IP : 127.0.0.1] insert aaa in mylist
+[2019/7/25 20:8:55:72] [IP : 127.0.0.1] insert bb in mylist
+[2019/7/25 20:8:57:840] [IP : 127.0.0.1] search key mylist
+[2019/7/25 20:9:6:514] [IP : 127.0.0.1] Delete range : bb In key mylist
+[2019/7/25 20:9:8:722] [IP : 127.0.0.1] search key mylist
+[2019/7/25 20:9:9:937] [IP : 127.0.0.1] This User is loged out
+[2019/7/25 20:9:10:688] [IP : 127.0.0.1] Server DisConnected

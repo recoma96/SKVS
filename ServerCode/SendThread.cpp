@@ -89,6 +89,7 @@ void SendThread(Socket* socket,
             //패킷 전송
 
             //1.패킷 사이즈 송신
+            
             if(sendData(socket, &bufSize, sizeof(int)) <= 0) {
                     
                 delete sendBuf;
@@ -123,7 +124,6 @@ void SendThread(Socket* socket,
                 adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
                 continue;
             }
-
             delete sendBuf;
 
 

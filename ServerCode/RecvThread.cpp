@@ -55,7 +55,7 @@ void RecvThread(Socket* socket,
         LogPacket* logPacket = nullptr;
 
         //데이터받기
-        if( recvData(socket, &recvBufSize, sizeof(int)) <= 0 ) {
+        if( recvData(socket, &recvBufSize, sizeof(int)) < 0 ) {
             
             //클라이언트를 종료 시킬 경우 이 스레드가 남으므로
             //차후에 개선할 예정
@@ -225,7 +225,7 @@ void RecvThread(Socket* socket,
 
                     //자기 자신은 삭제 못함
                     else if( recvPacket->getCmdArray()[1].compare(user->getID()) == 0) {
-                        msg = "자신감을 잃지 말아요 ㅠㅠ";
+                        msg = "you can't remove yourself";
                         logMsg = "userdel failed";
                         missionSuccess = false;
 
