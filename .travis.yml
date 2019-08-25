@@ -24,5 +24,6 @@ notification:
 
 script: 
   - whereis protoc
-  - ls -al /home/travis/protoc/include/google/protobuf/
+  - ls -al /usr/local/include
+  - ls -al /usr/local/include/google/protobuf
   - make HAS_SYSTEM_PROTOBUF=false
