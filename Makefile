@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++ -g
-CXXFLAGS= -std=c++17 -lprotobuf -pthread
+CXXFLAGS= -std=c++17 -lprotobuf -pthread -I/usr/include
 SERVER_TARGET=server/skvs-server
 CLIENT_TARGET=client/skvs-client
 

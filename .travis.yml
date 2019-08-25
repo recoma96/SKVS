@@ -18,11 +18,9 @@ install:
   - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
   
 env:
-  - PATH=$HOME/protoc/bin:/usr/local/include:$PATH
+  - PATH=$HOME/protoc/bin:/usr/include/google:$PATH
 notification:
     email: false
 
 script: 
-  - ls /usr/local
-  - ls /usr/local/include
   - make all
