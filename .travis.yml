@@ -23,4 +23,5 @@ notification:
     email: false
 
 script: 
-  - make all
+  - ls -al /usr/include/google/protobuf
+  - make HAS_SYSTEM_PROTOBUF=false
