@@ -23,5 +23,6 @@ notification:
     email: false
 
 script: 
-  - ls -al /usr/include/google/protobuf
+  - whereis protoc
+  - ls -al /home/travis/protoc/include/google/protobuf/
   - make HAS_SYSTEM_PROTOBUF=false
