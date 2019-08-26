@@ -127,6 +127,7 @@ void IOThread(   UserList* userList,
     }  else {
 
         UserLevel sendLevel = user.getUserLevel();
+
         if( sendData(sock, &sendLevel, sizeof(UserLevel)) <= 0) {
             
             string errorMsg("Failed To Connect client - ");

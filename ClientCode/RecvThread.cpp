@@ -37,12 +37,19 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
        
 
         //데이터받기
-        if( recvData(socket, &recvBufSize, sizeof(int)) < 0) {
-            cout << "Server Disconnected" << endl;
-            isShutdown = true;
-            continue;
+        while(true) {
+            if( recvData(socket, &recvBufSize, sizeof(int), MSG_DONTWAIT) > 0) {
+                break;
+            } else {
+                if(isShutdown) {
+                    cout << endl;
+                    cout << "Server Disconnected" << endl;
+                    cout << "Press Enter Key" << endl;
+                    return;
+                }
+                this_thread::sleep_for(chrono::milliseconds(1));
+            }
         }
-
 
         PacketType recvType;
         if( recvData(socket, &recvType, sizeof(PacketType)) <= 0) {
