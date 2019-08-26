@@ -63,7 +63,7 @@ extern void StandAloneAdapterThreadToDataBase(
 
 int main(void) {
 
-	cout << "SKVS[SERVER] 0.1.0 (Relesae August 23 2019 )" << endl;
+	cout << "SKVS[SERVER] 0.1.1 (Relesae August 26 2019 )" << endl;
 	cout << "Alpha Test Version 1" << endl;
 	cout << "Writen by SweetCase Project" << endl;
 
