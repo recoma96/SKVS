@@ -62,6 +62,10 @@ void UserConnectThread(
 
 			continue;
 		}
+
+		//로그 작성 : 외부 IP로부터 접근 시도
+
+		
 		
         int setTrue = 1;
 		setSocketOption(clientSocket, SOL_SOCKET, SO_REUSEADDR, 
@@ -69,6 +73,15 @@ void UserConnectThread(
 		
 		//ip, port 입력
 		clientSocket->clientUpdate(mainSocket->getPort());
+
+		logPacket = new LogPacket(
+		"Unknown", clientSocket->getIP(),0,0,"Unknown User is tryies to access"
+		);
+		adapterBridgeQueue->pushInQueue(
+			logPacket,
+			LogAdapterSerial_input
+		);
+		cout << logPacket->getStatement() << endl;
 
 		//IO Thread 생성
 		thread iothread = thread(IOThread,

@@ -54,43 +54,85 @@ void RecvThread(Socket* socket,
         char* recvBuf = nullptr;
         LogPacket* logPacket = nullptr;
 
-        //데이터받기
-        if( recvData(socket, &recvBufSize, sizeof(int)) < 0 ) {
-            
-            //클라이언트를 종료 시킬 경우 이 스레드가 남으므로
-            //차후에 개선할 예정
+        //응답 시간 제한
+        if( recvData(socket, &recvBufSize, sizeof(int)) <= 0 ) {
+
             if(*isDisConnected != true) {
-                logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
+                logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Client DisConnected");
                 cerr << logPacket->getStatement() << endl;
                 adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
             }
 
             *isDisConnected = true;
-            continue;
+            return;
         }
-
         
         PacketType recvType; //클라이언트로부터 받는 패킷 타입
 
-        if( recvData(socket, &recvType, sizeof(PacketType)) <= 0) {
+        //여기서부터 시간제한 걸기
+        //1분이 지나도 응답이 없을 경우 원상태로 복구
+        int cancelCounter = 0;
+        
+        while(true) {
 
-            logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
+            //입력 못받음
+            if( recvData(socket, &recvType, sizeof(PacketType), MSG_DONTWAIT) <= 0) { //입력 못받음
+
+                if(cancelCounter == 10000) { //제한시간 초과
+
+                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Client DisConnected");
+                    cerr << logPacket->getStatement() << endl;
+                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
+                    *isDisConnected = true;
+                    return;
+
+                } else {
+                    cancelCounter++;
+                    this_thread::sleep_for(chrono::milliseconds(1));
+                    continue;
+                }
+            } else { //바듬
+                cancelCounter = 0;
+                break;
+            }
+        }
+
+        //패킷 타입 유효성 검사
+        int packetTypeToInt = recvType;
+
+        if( packetTypeToInt < 0 || packetTypeToInt > PACKETTYPE_LOG) {
+            logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0,
+                    "This Packet Type is Invaild. It seems Server Attack.");
             cerr << logPacket->getStatement() << endl;
+
             adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
 
             *isDisConnected = true;
             continue;
         }
 
+
         recvBuf = new char[recvBufSize]; //데이터받을 버퍼
-        if( recvData(socket, recvBuf, recvBufSize) <= 0) {
+        while(true) {
+            if( recvData(socket, recvBuf, recvBufSize, MSG_DONTWAIT) <= 0) {
+                if(cancelCounter == 10000) {
 
-            logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Server DisConnected");
-            cerr << logPacket->getStatement() << endl;
-            adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Client DisConnected");
+                    cerr << logPacket->getStatement() << endl;
+                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
 
-            *isDisConnected = true;
-            continue;
+                    *isDisConnected = true;
+                    return;
+                } else {
+                    cancelCounter++;
+                    this_thread::sleep_for(chrono::milliseconds(1));
+                    continue;
+                }
+            } else { //바듬
+                cancelCounter = 0;
+                break;
+            }
         }
 
          //데이터 역직렬화
@@ -309,6 +351,7 @@ void RecvThread(Socket* socket,
 
                     //*isDisConnected = true;
                     delete recvPacket;
+                    return;
 
                 } else if(recvPacket->getCmdArray()[0].compare(System_Control::shutdown) == 0) {
                     cout << "shutdown" << endl;

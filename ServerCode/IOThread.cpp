@@ -61,19 +61,38 @@ void IOThread(   UserList* userList,
     weak_ptr<ThreadAdapter::AdapterThreadBridge> adapterBridgeQueue = _adpaterBridgeQueue;
     LogPacket* logPacket = nullptr;
 
+    //클라이언트로부터 응답이 없을 경우 연결 끊기
+    //기다리는 시간 10초
+    int cancelCounter = 0;
+    ssize_t recvDataSize = 0;
 
-    if( recvData(sock, loginBuf, sizeof(char)*48) <= 0 ) {
+    while(true) {
 
-        string errorMsg("Connected defused from client - ");
-        errorMsg += sock->getIP();
+        //응닶 없는 경우
+        if( (recvDataSize = recvData(sock, loginBuf, sizeof(char)*48, MSG_DONTWAIT)) <= 0 ) {
+            if(cancelCounter == 10000) {
 
-        logPacket = new LogPacket("Server", "Server", 0, 0, errorMsg);
-        cerr << logPacket->getStatement() << endl;
-        adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+                logPacket = new LogPacket(
+                    "Unknonw", sock->getIP(), 0, 0,
+                    "There is no response From Client"
+                );
+                cerr << logPacket->getStatement() << endl;
+                adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+                
+                //클라이언트와의 연결 끊기
+                closeSocket(sock);
+                delete sock;
+                return;
+            } else {
+                cancelCounter++;
+                this_thread::sleep_for(chrono::milliseconds(1));
+                continue;
+            }
 
-        closeSocket(sock);
-        delete sock;
-        return;
+        } else {
+            cancelCounter = 0;
+            break; //데이터 받음
+        }
     }
 
     string loginStr(loginBuf); //변환
