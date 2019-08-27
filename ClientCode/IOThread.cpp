@@ -35,7 +35,7 @@ inline int setCmdSerial(vector<int>& serialList) {
 	for( vector<int>::iterator iter = serialList.begin();
 			iter != serialList.end(); iter++ ) {
 
-		if( counter < (*iter))
+		if( counter <= (*iter))
             counter = (*iter)+1;
 	}
 	return counter;
