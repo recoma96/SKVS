@@ -11,12 +11,17 @@ pool:
 
 steps:
 - script: |
-    curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
-    unzip /tmp/protoc.zip -d "$HOME"/protoc
-    sudo apt-get install libprotobuf-dev protobuf-compiler
-    sudo apt-get install libprotoc-dev
-    mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
-    PATH=$HOME/protoc/bin:/usr/include/google:$PATH
+    git clone https://github.com/protocolbuffers/protobuf.git
+    cd protobuf
+    git submodule update --init --recursive
+    sh autogen.sh
+    ./configure
+    make
+    make check
+    sudo make install
+    sudo ldconfig
+    sh configure --prefix=/usr
+    cd ..
   displayName: 'install protobuf'
 
 
