@@ -15,7 +15,6 @@ steps:
     unzip /tmp/protoc.zip -d "$HOME"/protoc
     mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
     sudo apt-get install libprotobuf-dev protobuf-compiler
-    sudo apt-get install libprotoc-dev
     PATH=$HOME/protoc/bin:/usr/include/google:$PATH
   displayName: 'install protobuf'
 
