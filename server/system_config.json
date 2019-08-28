@@ -1,5 +1,5 @@
 {
-    "port": 8000,
+    "port": 13403,
     "style": "STANDALONE",
     "log": {
         "location": "log/"
