@@ -14,6 +14,8 @@ steps:
     curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
     unzip /tmp/protoc.zip -d "$HOME"/protoc
     mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
+    sudo apt-get install libprotobuf-dev protobuf-compiler
+    sudo apt-get install libprotoc-dev
     PATH=$HOME/protoc/bin:/usr/include/google:$PATH
   displayName: 'install protobuf'
 
