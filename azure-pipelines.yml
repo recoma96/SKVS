@@ -1,0 +1,25 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: |
+    curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
+    unzip /tmp/protoc.zip -d "$HOME"/protoc
+    sudo apt-get install libprotobuf-dev protobuf-compiler
+    sudo apt-get install libprotoc-dev
+    mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
+    PATH=$HOME/protoc/bin:/usr/include/google:$PATH
+  displayName: 'install protobuf'
+
+
+- script: make all
+  displayName: 'make'
+
