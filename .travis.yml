@@ -9,19 +9,12 @@ branches:
   only:
     - master
 
-before_install:
-  - export PATH=$HOME/.local/bin:$HOME/protobuf/bin:$PATH
-
 install:
   #protoc
-  - mkdir -p $HOME/protobuf && pushd $HOME/protobuf
-    && curl -LO https://github.com/google/protobuf/releases/download/v3.9.1/protoc-3.9.1-linux-x86_64.zip -o /tmp/protoc.zip
-    && unzip protoc-3.9.0-linux-x86_64.zip
-    && poped
-  - curl -L 'https://github.com/protocolbuffers/protobuf/releases/download/v3.9.1/protobuf-cpp-3.9.1.tar.gz' | tar xzf -
-    && pushd protobuf-3.9.1/cpp
-    && ./configure && make && make check && sudo make install sudo ldconfig
-    && popd
+  - curl -L https://github.com/google/protobuf/releases/download/v3.9.0/protoc-3.9.0-linux-x86_64.zip -o /tmp/protoc.zip
+  - unzip /tmp/protoc.zip -d "$HOME"/protoc
+  - mkdir -p "$HOME"/src && ln -s "$HOME"/protoc "$HOME"/src/protobuf
+  - sudo apt-get install libprotobuf-dev protobuf-compiler
   
 env:
   - PATH=$HOME/protoc/bin:/usr/include/google:$PATH
