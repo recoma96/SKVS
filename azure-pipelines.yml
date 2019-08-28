@@ -20,6 +20,8 @@ steps:
   displayName: 'install protobuf'
 
 
-- script: make all
+- script: | 
+    protoc --version
+    make all
   displayName: 'make'
 
