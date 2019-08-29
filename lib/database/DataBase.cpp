@@ -131,7 +131,7 @@ void SKVS_DataBase::DataBase::create(SendCmdPacket& _requestPacket) {
     this->queueAdapter.lock()->pushInOutputQueue(sigPacket);
 
     //인자수 적합성 판단.
-    if(_requestPacket.getCmdArray().size() < 3) {
+    if(_requestPacket.getCmdArray().size() < 2) {
         errorMsg = "create [struct-type] [new-key] <data-type>";
 
         exceptError(_requestPacket, errorMsg); 
@@ -701,7 +701,7 @@ void SKVS_DataBase::DataBase::insert(SendCmdPacket& _requestPacket) {
 
     //인자값 측정
     if( cmdVec.size() != 3 && cmdVec.size() != 4 ) {
-        result = "insert [key] [new-value]\ninsert [key] [new-key] [new-value] <- Only HashMap";
+        result = "insert [key] [new-value] or [new-key] [new-value] -> only hashmap";
         exceptError(_requestPacket, result);
         return;
     }
@@ -1069,15 +1069,22 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 list<DataElement> resultList = ((StaticList*)(foundData))->searchIndex(cmdVec[3]);
                 mutexMap.find(foundData)->second->unlock();
 
-                //출력 인터페이스
-                string iFace = cmdVec[2] + " | " + "Static List" + "\n" + 
-                                "total : " + to_string(resultList.size()) + "\n" +
-                                "-------------------------------------\n";
-
+                string iFace = cmdVec[2] + " | " + "Static List"; 
+                            
+            
                 //인터페이스 출력               
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, iFace)
                 );
+                iFace = "total : " + to_string(resultList.size());
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
+                );
+                iFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
+                );
+                
                 for(list<DataElement>::iterator iter  = resultList.begin(); 
                     iter != resultList.end(); iter++ ) { 
                         
@@ -1112,14 +1119,21 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 mutexMap.find(foundData)->second->unlock();
 
                 //출력 인터페이스
-                string iFace = cmdVec[2] + " | " + "Dynamic List" + "\n" + 
-                                "total : " + to_string(resultList.size()) + "\n" +
-                                "-------------------------------------\n";
+                string iFace = cmdVec[2] + " | " + "Dynamic List";
 
                 //인터페이스 출력               
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, iFace)
                 );
+                iFace = "total : " + to_string(resultList.size());
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
+                );
+                iFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
+                );
+
                 for(list<DataElement>::iterator iter  = resultList.begin(); 
                     iter != resultList.end(); iter++ ) { 
                         
@@ -1235,12 +1249,17 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 mutexMap.find(foundData)->second->unlock();
                 //resultList = &tempList;
                 
-                firstIFace = "Total Size : " + to_string(resultList.size()) + "\n" + "-------------------------------------";
+                firstIFace = "Total Size : " + to_string(resultList.size());
  
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, firstIFace)
                 );
-                
+                string iFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
+                );
+
+
                 for(list<DataElement>::iterator iter = resultList.begin(); 
                         iter != resultList.end(); iter++ ) {
 
@@ -1257,10 +1276,14 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 list<DataElement> resultList = ((StaticList*)(foundData))->searchRange(*condition);
                 mutexMap.find(foundData)->second->unlock();
 
-                firstIFace = "Total Size : " + to_string(resultList.size()) + "\n" + "-------------------------------------";
+                firstIFace = "Total Size : " + to_string(resultList.size());
  
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, firstIFace)
+                );
+                string iFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
                 );
                 
                 for(list<DataElement>::iterator iter = resultList.begin(); 
@@ -1279,11 +1302,17 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 list<DataElement> resultList = ((DynamicList*)(foundData))->searchRange(*condition);
                 mutexMap.find(foundData)->second->unlock();
 
-                firstIFace = "Total Size : " + to_string(resultList.size()) + "\n" + "-------------------------------------";
+                firstIFace = "Total Size : " + to_string(resultList.size());
  
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, firstIFace)
                 );
+
+                firstIFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, firstIFace)
+                );
+
                 
                 for(list<DataElement>::iterator iter = resultList.begin(); 
                         iter != resultList.end(); iter++ ) {
@@ -1301,10 +1330,14 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 list<DataElement> resultList = ((StaticHashMap*)(foundData))->searchRange(*condition);
                 mutexMap.find(foundData)->second->unlock();
 
-                firstIFace = "Total Size : " + to_string(resultList.size()) + "\n" + "-------------------------------------";
+                firstIFace = "Total Size : " + to_string(resultList.size());
  
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, firstIFace)
+                );
+                string iFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
                 );
                 
                 for(list<DataElement>::iterator iter = resultList.begin(); 
@@ -1323,10 +1356,14 @@ void SKVS_DataBase::DataBase::get(SendCmdPacket& _requestPacket) {
                 list<DataElement> resultList = ((DynamicHashMap*)(foundData))->searchRange(*condition);
                 mutexMap.find(foundData)->second->unlock();
 
-                firstIFace = "Total Size : " + to_string(resultList.size()) + "\n" + "-------------------------------------";
+                firstIFace = "Total Size : " + to_string(resultList.size());
  
                 this->queueAdapter.lock()->pushInOutputQueue(
                     new RecvMsgPacket(_requestPacket, firstIFace)
+                );
+                string iFace = "-------------------------------------";
+                this->queueAdapter.lock()->pushInOutputQueue(
+                    new RecvMsgPacket(_requestPacket, iFace)
                 );
                 
                 for(list<DataElement>::iterator iter = resultList.begin(); 
@@ -2226,12 +2263,17 @@ void SKVS_DataBase::DataBase::getsize(SendCmdPacket& _requestPacket) {
     //결과 데이터 생성
     DataElement totalSizeBlock(to_string(totalSize),DATATYPE_NUMBER, STRUCTTYPE_ELEMENT);
     
-    result =  cmdVec[1] + " | Total Size [byte]\n-------------------------";
+    result =  cmdVec[1] + " | Total Size [byte]";
     logMsg = "calulate total size about key : " + cmdVec[1]; 
 
     this->queueAdapter.lock()->pushInOutputQueue(
             new RecvMsgPacket(_requestPacket, result)
     );
+    result = "-------------------------";
+    this->queueAdapter.lock()->pushInOutputQueue(
+            new RecvMsgPacket(_requestPacket, result)
+    );
+
     this->queueAdapter.lock()->pushInOutputQueue(
             new RecvDataPacket(_requestPacket, totalSizeBlock)
     );
@@ -2278,7 +2320,11 @@ void SKVS_DataBase::DataBase::getkey(SendCmdPacket& _requestPacket) {
         vector<string> resultKey = ((HashMap*)(foundData))->getKey();
         mutexMap.find(foundData)->second->unlock();
 
-        result = "HashMap : '" + cmdVec[1] + "' key list\n-------------------------";
+        result = "HashMap : '" + cmdVec[1] + "' key list";
+        this->queueAdapter.lock()->pushInOutputQueue(
+            new RecvMsgPacket(_requestPacket, result)
+        );
+        result = "-------------------------";
         this->queueAdapter.lock()->pushInOutputQueue(
             new RecvMsgPacket(_requestPacket, result)
         );

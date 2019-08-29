@@ -1,10 +1,10 @@
 #include "../lib/SockWrapper/ServerSocketManager.hpp"
 #include "../lib/SockWrapper/NetworkingManager.hpp"
 #include "../lib/SockWrapper/SocketManager.hpp"
-#include "../lib/packet/SerialController.hpp"
 #include "../lib/packet/Packet.hpp"
 #include "../lib/user/LoginedUser.hpp"
 #include "../lib/threadAdapter/AdapterThreadBridge.hpp"
+#include "../lib/packet/SkvsProtocol.hpp"
 
 
 #include <string>
@@ -21,8 +21,7 @@ extern unsigned int LogAdapterSerial_input;
 
 using namespace std;
 using namespace SockWrapperForCplusplus;
-using namespace PacketSerialData;
-using namespace google;
+using namespace SkvsProtocol;
 
 void SendThread(Socket* socket,
                 LoginedUser* user,
@@ -55,11 +54,12 @@ void SendThread(Socket* socket,
                 {
                     RecvPacket* recvPacket = (RecvPacket*)sendPacket;
                     if( recvPacket->getRecvPacketType() == RECVPACKETTYPE_DATA ) {
-                        sendBuf = makePacketToCharArray<RecvDataPacket>( *((RecvDataPacket*)(recvPacket)) );
+                        sendBuf = makePacketSerial( ((RecvDataPacket*)(recvPacket)) );
                         bufSize = strlen(sendBuf);
+                        
                         delete recvPacket;
                     } else {
-                        sendBuf = makePacketToCharArray<RecvMsgPacket>( *((RecvMsgPacket*)(recvPacket)) );
+                        sendBuf = makePacketSerial( ((RecvMsgPacket*)(recvPacket)) );
                         bufSize = strlen(sendBuf);
                         delete recvPacket;
                     } 
@@ -67,7 +67,7 @@ void SendThread(Socket* socket,
                 break;
                 case PACKETTYPE_SIGNAL:
                 {
-                    sendBuf = makePacketToCharArray<SignalPacket>( *((SignalPacket*)(sendPacket)) );
+                    sendBuf = makePacketSerial( ((SignalPacket*)(sendPacket)) );
                     bufSize = strlen(sendBuf);
                     if( ((SignalPacket*)(sendPacket))->getSignal() == SIGNALTYPE_SHUTDOWN ) {
                         
@@ -125,11 +125,10 @@ void SendThread(Socket* socket,
                 continue;
             }
             delete sendBuf;
-
+            
 
             if(disconnectedBuf == true)
                 (*isDisConnected) = true;
-
         }
 
         this_thread::sleep_for(chrono::milliseconds(1));

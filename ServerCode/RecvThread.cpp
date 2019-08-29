@@ -6,11 +6,11 @@
 #include "../lib/SockWrapper/NetworkingManager.hpp"
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/threadAdapter/AdapterThreadBridge.hpp"
-#include "../lib/packet/SerialController.hpp"
 #include "../lib/CommandList.hpp"
 #include "../lib/loader/SystemLoader.hpp"
 #include "../lib/loader/AccountLoader.hpp"
 #include "../lib/Tokenizer.hpp"
+#include "../lib/packet/SkvsProtocol.hpp"
 
 #include <string>
 #include <deque>
@@ -23,7 +23,7 @@
 
 using namespace std;
 using namespace SockWrapperForCplusplus;
-using namespace PacketSerialData;
+using namespace SkvsProtocol;
 using namespace CommandList;
 
 extern unsigned int LogAdapterSerial_input;
@@ -113,7 +113,10 @@ void RecvThread(Socket* socket,
         }
 
 
-        recvBuf = new char[recvBufSize]; //데이터받을 버퍼
+        recvBuf = new char[recvBufSize+1]; //데이터받을 버퍼
+        recvBuf[recvBufSize] = '\0';
+        
+        //recvBuf = {0};
         while(true) {
             if( recvData(socket, recvBuf, recvBufSize, MSG_DONTWAIT) <= 0) {
                 if(cancelCounter == 10000) {
@@ -134,7 +137,7 @@ void RecvThread(Socket* socket,
                 break;
             }
         }
-
+        
          //데이터 역직렬화
         SendCmdPacket* recvPacket = nullptr;
 
@@ -144,6 +147,14 @@ void RecvThread(Socket* socket,
             case PACKETTYPE_SENDCMD:
             {
                 recvPacket = returnToPacket<SendCmdPacket>(recvBuf);
+
+                //잘못된 데이터
+                if( recvPacket == nullptr) {
+                    //데이터 파기
+                    
+                    delete[] recvBuf;
+                    continue;
+                }
 
                 //소켓 번호를 서버측의 소켓 번호로 변경
                 recvPacket->setSock(socket->getDiscripter());

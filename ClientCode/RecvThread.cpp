@@ -13,17 +13,15 @@
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/user/User.hpp"
 #include "../lib/packet/Packet.hpp"
-#include "../lib/packet/SerialController.hpp"
+#include "../lib/packet/SkvsProtocol.hpp"
 
 #include "../lib/Exception.hpp"
-#include <google/protobuf/io/zero_copy_stream_impl_lite.h>
 
 extern bool isShutdown;
 
 using namespace std;
 using namespace SockWrapperForCplusplus;
-using namespace PacketSerialData;
-using namespace google;
+using namespace SkvsProtocol;
 
 //서버로부터 패킷을 받고 패킷 큐에다 패킷을 전달하는 스레드입니다.
 void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
@@ -50,7 +48,7 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
                 this_thread::sleep_for(chrono::milliseconds(1));
             }
         }
-
+        
         PacketType recvType;
         if( recvData(socket, &recvType, sizeof(PacketType)) <= 0) {
             cout << "Server Disconnected" << endl;
@@ -58,26 +56,41 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
             continue;
         }
 
-        recvBuf = new char[recvBufSize];
+        recvBuf = new char[recvBufSize+1];
+        //recvBuf = {0};
 
-        if( recvData(socket, recvBuf, recvBufSize) <= 0) {
+        if( recvData(socket, recvBuf, recvBufSize+1) <= 0) {
+
             cout << "Server Disconnected" << endl;
             isShutdown = true;
             continue;
         }
-
-
+        //널 초기화
+        recvBuf[recvBufSize] = '\0';
+        
+        
         Packet* savePacket = nullptr;
         //SendCmd나 log가 들어오면 안됨
         switch( recvType ) {
 
             case PACKETTYPE_RECV:
             {
-                RecvPacketType checkType = whatIsRecvPacketTypeInRecvDataSerial(recvBuf);
+                RecvPacketType checkType;
+                try {
+
+                    checkType = checkRecvPacketType(recvBuf);
+                } catch (Exception& e) {
+                    //데이터 파괴
+                    delete recvBuf;
+                    cout << e.getErrorMsg() << endl;
+                    continue;
+                }
                 if( checkType == RECVPACKETTYPE_DATA)
                     savePacket = returnToPacket<RecvDataPacket>(recvBuf);
-                else
+                else {
                     savePacket = returnToPacket<RecvMsgPacket>(recvBuf);
+                    
+                }
             }
             break;
 
@@ -103,9 +116,16 @@ void RecvThread(Socket* socket, queue<Packet*, deque<Packet*>>* packetQueue) {
         }
         //패킷 큐에 삽입
 
+        if(savePacket == nullptr) {
+            //패킷 파괴
+            delete[] recvBuf;
+            continue;
+        }
         packetQueue->push(savePacket);
-
+        
+        
         delete[] recvBuf;
+
     }
 
 

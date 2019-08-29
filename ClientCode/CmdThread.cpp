@@ -29,9 +29,10 @@ void CmdThread(int cmdNum,
     while(!isShutdown) {
         if(!packetQueue->empty()) {
             //cmd번호 확인
-            
-            if(packetQueue->front()->getCmdNum() == cmdNum) {
 
+            if(packetQueue->front()->getCmdNum() == cmdNum) {                
+                
+                
                 //패킷 큐에서 패킷 받기
                 packetQueueMutex->lock();
                 Packet* recvPacket = packetQueue->front();

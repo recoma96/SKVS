@@ -14,14 +14,14 @@
 #include "../lib/SockWrapper/SocketManager.hpp"
 #include "../lib/user/User.hpp"
 #include "../lib/packet/Packet.hpp"
-#include "../lib/packet/SerialController.hpp"
+#include "../lib/packet/SkvsProtocol.hpp"
 
 #include "../lib/Exception.hpp"
 #include "../lib/Tokenizer.hpp"
 
 using namespace SockWrapperForCplusplus;
-using namespace PacketSerialData;
 using namespace std;
+using namespace SkvsProtocol;
 
 //명령스레드 시리얼 번호 계산
 inline int setCmdSerial(vector<int>& serialList) {
@@ -106,6 +106,7 @@ void IOThread(User* userInfo, Socket* socket) {
         if(isShutdown) return; //서버측에서 종료요청을 받았을 경우
 
         if( cmd.length() == 0) continue;
+        //탭키 사용했는지 확인
         vector<string> cmdVec = tok::tokenizer(cmd);
 
         if(cmdVec.empty()) continue;
@@ -126,11 +127,10 @@ void IOThread(User* userInfo, Socket* socket) {
         cmdThread.detach();
 
         //서버에 데이터를 보냅니다.
-
+        
         //길이 -> 패킷 직렬화 -> 직렬화된 패킷 전송
         SendCmdPacket sendPacket(userInfo->getID(), socket->getIP(), cmdSerial, 0, cmd);
-
-        char* sendStr = makePacketToCharArray<SendCmdPacket>(sendPacket);
+        char* sendStr = makePacketSerial(&sendPacket);
         int sendStrSize = strlen(sendStr);
         
         //패킷 전송 (데이터 길이, 데이터 타입, 데이터)
@@ -153,6 +153,7 @@ void IOThread(User* userInfo, Socket* socket) {
             continue;
         }
         delete sendStr;
+
     }
 
 }
