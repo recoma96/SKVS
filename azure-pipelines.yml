@@ -10,7 +10,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 
-- script: | 
-    make all
+- script: make all
   displayName: 'make'
 
