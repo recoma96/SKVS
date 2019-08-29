@@ -1,4 +1,4 @@
-# SKVS 0.1.2 (Alpha Test Version 1)
+# SKVS 0.2.0 (Alpha Test Version 2)
 * SKVS(SweetCase Key-Value Storage)는 In Memory Key-Value 데이터베이스로 키를 이용해서 데이터를 받거나 수정을 합니다.
 * MultiThread 방식으로 동작을 하므로, 하나의 일을 하는 동안 다른 일을 할 수 있습니다.
 * [Class Diagram](https://repository.genmymodel.com/seokbong60/SDKVS?utm_source=dashboard)
@@ -12,7 +12,7 @@
 * [TCP Socket Function Wrapper For C++ 0.0.1](https://github.com/Re-Coma/TCPSocketFunction-Wrapper-For-Cplusplus)
 ### External Library
 * rapidjson 1.1.0
-* google protocol buffer : libprotoc 3.9.0
+* ~~google protocol buffer : libprotoc 3.9.0~~ __호환성 문제로 0.2.0부터 사용하지 않습니다. 그러므로 컴파일 할 때도 -lprotobuf를 사용하지 않습니다.__
 
 ## Config 설정 방법
 ### Cilent
