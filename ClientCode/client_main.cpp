@@ -21,7 +21,7 @@ extern void IOThread(User* userInfo, Socket* socket);
 bool isShutdown = false; //shotdown flag
 int main(void) {
 
-	cout << "SKVS[CLIENT] 0.1.2 (Relesae August 26 2019)" << endl;
+	cout << "SKVS[CLIENT] 0.2.0 (Relesae August 29 2019)" << endl;
 	cout << "Alpha Test Version 1" << endl;
 	cout << "Writen by SweetCase Project" << endl;
 	cout << endl;
