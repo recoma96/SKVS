@@ -151,8 +151,18 @@ void RecvThread(Socket* socket,
                 //잘못된 데이터
                 if( recvPacket == nullptr) {
                     //데이터 파기
+
+                    //서버공격으로 판단하고 연결 끊기
+                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Unknown Packet From This Client");
+                    cerr << logPacket->getStatement() << endl;
+                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
+                    logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "It seems server attack so. disconnect witch this client");
+                    cerr << logPacket->getStatement() << endl;
+                    adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
                     
                     delete[] recvBuf;
+                    *isDisConnected = true;
                     continue;
                 }
 
@@ -162,6 +172,18 @@ void RecvThread(Socket* socket,
             break;  
             default:
                 delete[] recvBuf;
+
+                logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "Unknown Packet From This Client");
+                cerr << logPacket->getStatement() << endl;
+                adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+
+                logPacket = new LogPacket(user->getID(), socket->getIP(), 0, 0, "It seems server attack so. disconnect witch this client");
+                cerr << logPacket->getStatement() << endl;
+                adapterBridgeQueue.lock()->pushInQueue(logPacket, LogAdapterSerial_input);
+                    
+                delete[] recvBuf;
+                *isDisConnected = true;
+
                 continue;
             break;
         }

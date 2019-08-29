@@ -22,7 +22,7 @@ bool isShutdown = false; //shotdown flag
 int main(void) {
 
 	cout << "SKVS[CLIENT] 0.2.0 (Relesae August 29 2019)" << endl;
-	cout << "Alpha Test Version 1" << endl;
+	cout << "Alpha Test Version 2" << endl;
 	cout << "Writen by SweetCase Project" << endl;
 	cout << endl;
 
