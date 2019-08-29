@@ -9,7 +9,7 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-
-script: make all
-  displayName: 'make'
+steps:
+  - script: make all
+    displayName: 'make'
 
