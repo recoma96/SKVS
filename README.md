@@ -1,5 +1,5 @@
 # SKVS
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/Re-Coma/SKVS)
+[![GitHub release (latest by date)](https://github.com/Re-Coma/SKVS/releases/tag/v0.2.0)](https://github.com/Re-Coma/SKVS/releases/tag/v0.2.0)
 [![Build Status](https://travis-ci.org/Re-Coma/SKVS.svg?branch=master)](https://travis-ci.org/Re-Coma/SKVS) 
 ![appveyor](https://ci.appveyor.com/api/projects/status/github/Re-Coma/skvs?branch=master&svg=true)
 [![GitHub](https://img.shields.io/github/license/Re-Coma/SKVS)](https://github.com/Re-Coma/SKVS/blob/master/LICENSE)
