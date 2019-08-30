@@ -2,7 +2,7 @@
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Re-Coma/SKVS)
 [![Build Status](https://travis-ci.org/Re-Coma/SKVS.svg?branch=master)](https://travis-ci.org/Re-Coma/SKVS) 
 ![appveyor](https://ci.appveyor.com/api/projects/status/github/Re-Coma/skvs?branch=master&svg=true)
-![GitHub](https://img.shields.io/github/license/Re-Coma/SKVS) 
+[![GitHub](https://github.com/Re-Coma/SKVS/blob/master/LICENSE)](https://img.shields.io/github/license/Re-Coma/SKVS) 
 
 * SKVS(SweetCase Key-Value Storage)는 In Memory Key-Value 데이터베이스로 키를 이용해서 데이터를 받거나 수정을 합니다.
 * MultiThread 방식으로 동작을 하므로, 하나의 일을 하는 동안 다른 일을 할 수 있습니다.
