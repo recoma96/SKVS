@@ -64,6 +64,13 @@ namespace SKVS_DataBase {
         //명령문 실행
         void runCmd(SendCmdPacket& _requestPacket);
         //weak_ptr<DataBase> getWeekPtr() { return weak_from_this(); }
+        bool checkIsDataExist(const string _targetDataName) noexcept {
+            
+            for(list<DataBase*>::iterator iter = dataBase.begin();
+                iter != dataBase.end(); iter++)
+                if(_targetDataName.compare(iter->getDataToString()) == 0) return true;
+            return false;
+        }  
     };
 }
 
