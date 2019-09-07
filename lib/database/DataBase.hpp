@@ -68,7 +68,7 @@ namespace SKVS_DataBase {
             
             for(list<DataElement*>::iterator iter = dataBase.begin();
                 iter != dataBase.end(); iter++)
-                if(_targetDataName.compare(iter->getDataToString()) == 0) return true;
+                if(_targetDataName.compare((*iter)->getDataToString()) == 0) return true;
             return false;
         }  
     };
